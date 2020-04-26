@@ -239,10 +239,7 @@ count : number
 
 * Response JSON
 ```json
-[
-  {
-    "author": "number",
-    "post": "string"
-  }
-]
+{
+  "post": "number[]"
+}
 ```

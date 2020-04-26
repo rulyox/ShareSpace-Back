@@ -34,7 +34,7 @@ const selectImageFile = (post: number, image: string): string =>
     WHERE post = ${post} AND image = "${image}";`;
 
 const selectFeedInRange = (user: number, start: number, count: number): string =>
-    `SELECT author, post
+    `SELECT post
     FROM feed
     WHERE user = ${user}
     LIMIT ${start}, ${count};`;

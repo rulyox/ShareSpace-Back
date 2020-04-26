@@ -125,14 +125,17 @@ const checkImage = (post: number, image: string): Promise<boolean> => {
     });
 };
 
-const getFeed = (user: number, start: number, count: number): Promise<{author: number, post: number}> => {
+const getFeed = (user: number, start: number, count: number): Promise<number[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const feedQuery: {author: number, post: number} = await mysqlManager.execute(postSQL.selectFeedInRange(user, start, count));
+            const feedQuery = await mysqlManager.execute(postSQL.selectFeedInRange(user, start, count));
 
-            resolve(feedQuery);
+            const postList = [];
+            for(const post of feedQuery) postList.push(post.post);
+
+            resolve(postList);
 
         } catch(error) { reject(error); }
 

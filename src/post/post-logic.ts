@@ -250,7 +250,7 @@ start : number (starts from 0)
 count : number
 
 Response JSON
-{author: number, post: number}[]
+{post: number[]}
 */
 const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -274,9 +274,9 @@ const getFeed = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const feedData = await postController.getFeed(user, start, count);
+        const feedData: number[] = await postController.getFeed(user, start, count);
 
-        response.json(feedData);
+        response.json({ post: feedData });
 
     } catch(error) { next(error); }
 
