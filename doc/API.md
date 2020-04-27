@@ -33,7 +33,7 @@ Check login and create token.
 
 ### GET /user
 
-Login.
+Login using token.
 
 * Request Header
 ```
@@ -76,6 +76,23 @@ Sign up.
 201 : Email exists
 ```
 
+### GET /user/data/:id
+
+Get user data.
+
+* Request Param
+```
+id : number
+```
+
+* Response JSON
+```json
+{
+  "name": "string",
+  "image": "string"
+}
+```
+
 ### GET /user/image/:id
 
 Get profile image.
@@ -111,23 +128,6 @@ files
 }
 ```
 
-### GET /user/data/:id
-
-Get user data.
-
-* Request Param
-```
-id : number
-```
-
-* Response JSON
-```json
-{
-  "name": "string",
-  "image": "string"
-}
-```
-
 ## /post
 
 ### POST /post
@@ -149,6 +149,57 @@ files
 ```json
 {
   "postId": "number"
+}
+```
+
+### GET /post/data/:id
+
+Get post data.
+
+* Request Header
+```
+token : string
+```
+  
+* Request Param
+```
+id : number
+```
+  
+* Response JSON
+```json
+{
+  "result": "number",
+  "message": "string",
+  "data": {
+    "user": "number",
+    "name": "string",
+    "profile": "string",
+    "text": "string",
+    "image": "string[]"
+  }
+}
+```
+
+### GET /post/feed
+
+Get feed.
+
+* Request Header
+```
+token : string
+```
+
+* Request Query
+```
+start : number (starts from 0)
+count : number
+```
+
+* Response JSON
+```json
+{
+  "post": "number[]"
 }
 ```
 
@@ -188,35 +239,6 @@ count : number
 201 : Wrong range
 ```
 
-### GET /post/data/:id
-
-Get post data.
-
-* Request Header
-```
-token : string
-```
-  
-* Request Param
-```
-id : number
-```
-  
-* Response JSON
-```json
-{
-  "result": "number",
-  "message": "string",
-  "data": {
-    "user": "number",
-    "name": "string",
-    "profile": "string",
-    "text": "string",
-    "image": "string[]"
-  }
-}
-```
-
 * Result Code
 ```
 101 : OK
@@ -241,26 +263,4 @@ image: string
 Response
 ```
 image file
-```
-
-### GET /post/feed
-
-Get feed.
-
-* Request Header
-```
-token : string
-```
-
-* Request Query
-```
-start : number (starts from 0)
-count : number
-```
-
-* Response JSON
-```json
-{
-  "post": "number[]"
-}
 ```

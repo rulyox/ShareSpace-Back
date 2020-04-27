@@ -3,10 +3,19 @@ import postLogic from './post-logic';
 
 const router = express.Router();
 
+// Write new post.
 router.post('/', postLogic.post);
-router.get('/user/:id', postLogic.getUser);
+
+// Get post data.
 router.get('/data/:id', postLogic.getData);
-router.get('/image/:post/:image', postLogic.getImage);
+
+// Get feed.
 router.get('/feed', postLogic.getFeed);
+
+// Get post list by user.
+router.get('/user/:id', postLogic.getUser);
+
+// Get image file.
+router.get('/image/:post/:image', postLogic.getImage);
 
 export default router;

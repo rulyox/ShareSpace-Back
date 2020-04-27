@@ -67,7 +67,7 @@ const postToken = async (request: express.Request, response: express.Response, n
 /*
 GET /user
 
-Login.
+Login using token.
 
 Request Header
 token : string
@@ -141,6 +141,48 @@ const post = async (request: express.Request, response: express.Response, next: 
         response.json({
             result: addUserResult,
             message: resultMessage
+        });
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+GET /user/data/:id
+
+Get user data.
+
+Request Param
+id : number
+
+Response JSON
+{name: string, image: string}
+*/
+const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    const id = Number(request.params.id);
+
+    // type check
+    if(isNaN(id)) {
+        response.status(400).end();
+        return;
+    }
+
+    utility.print(`GET /user/data ${id}`);
+
+    try {
+
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+
+        // user exist check
+        if(!userDataResult.result) {
+            response.status(404).end();
+            return;
+        }
+
+        response.json({
+            name: userDataResult.name!,
+            image: userDataResult.image!,
         });
 
     } catch(error) { next(error); }
@@ -225,53 +267,11 @@ const postImage = async (request: express.Request, response: express.Response, n
 
 };
 
-/*
-GET /user/data/:id
-
-Get user data.
-
-Request Param
-id : number
-
-Response JSON
-{name: string, image: string}
-*/
-const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-
-    const id = Number(request.params.id);
-
-    // type check
-    if(isNaN(id)) {
-        response.status(400).end();
-        return;
-    }
-
-    utility.print(`GET /user/data ${id}`);
-
-    try {
-
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
-
-        // user exist check
-        if(!userDataResult.result) {
-            response.status(404).end();
-            return;
-        }
-
-        response.json({
-            name: userDataResult.name!,
-            image: userDataResult.image!,
-        });
-
-    } catch(error) { next(error); }
-
-};
-
 export default {
     postToken,
     get,
     post,
+    getData,
     getImage,
-    postImage,
-    getData
+    postImage
 };

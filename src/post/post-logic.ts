@@ -46,6 +46,123 @@ const post = async (request: express.Request, response: express.Response, next: 
 };
 
 /*
+GET /post/data/:id
+
+Get post data.
+
+Request Header
+token : string
+
+Request Param
+id : number
+
+Response JSON
+{result: number, message: string, data: {user: number, name: string, profile: string, text: string, image: string[]}}
+
+Result Code
+101 : OK
+201 : Post does not exist
+*/
+const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    const user = response.locals.user;
+    const id = Number(request.params.id);
+
+    // type check
+    if(isNaN(id)) {
+        response.status(400).end();
+        return;
+    }
+
+    // auth check
+    if(user === null) {
+        response.status(401).end();
+        return;
+    }
+
+    utility.print(`GET /post user: ${user} id: ${id}`);
+
+    try {
+
+        const postData: {result: number, user?: number, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
+
+        switch(postData.result) {
+
+            case 101:
+                response.json({
+                    result: 101,
+                    message: 'OK',
+                    data: {
+                        user: postData.user,
+                        name: postData.name,
+                        profile: postData.profile,
+                        text: postData.text,
+                        image: postData.image
+                    }
+                });
+
+                break;
+
+            case 201:
+                response.json({
+                    result: 201,
+                    message: 'Post does not exist'
+                });
+
+                break;
+
+        }
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+GET /post/feed
+
+Get feed.
+
+Request Header
+token : string
+
+Request Query
+start : number (starts from 0)
+count : number
+
+Response JSON
+{post: number[]}
+*/
+const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    const user = response.locals.user;
+    const start = Number(request.query.start);
+    const count = Number(request.query.count);
+
+    // type check
+    if(isNaN(start) || isNaN(count)) {
+        response.status(400).end();
+        return;
+    }
+
+    // auth check
+    if(user === null) {
+        response.status(401).end();
+        return;
+    }
+
+    utility.print(`GET /post/feed user: ${user}`);
+
+    try {
+
+        const feedData: number[] = await postController.getFeed(user, start, count);
+
+        response.json({ post: feedData });
+
+    } catch(error) { next(error); }
+
+};
+
+/*
 GET /post/user/:id
 
 Get post list by user.
@@ -121,78 +238,6 @@ const getUser = async (request: express.Request, response: express.Response, nex
 };
 
 /*
-GET /post/data/:id
-
-Get post data.
-
-Request Header
-token : string
-
-Request Param
-id : number
-
-Response JSON
-{result: number, message: string, data: {user: number, name: string, profile: string, text: string, image: string[]}}
-
-Result Code
-101 : OK
-201 : Post does not exist
-*/
-const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-
-    const user = response.locals.user;
-    const id = Number(request.params.id);
-
-    // type check
-    if(isNaN(id)) {
-        response.status(400).end();
-        return;
-    }
-
-    // auth check
-    if(user === null) {
-        response.status(401).end();
-        return;
-    }
-
-    utility.print(`GET /post user: ${user} id: ${id}`);
-
-    try {
-
-        const postData: {result: number, user?: number, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
-
-        switch(postData.result) {
-
-            case 101:
-                response.json({
-                    result: 101,
-                    message: 'OK',
-                    data: {
-                        user: postData.user,
-                        name: postData.name,
-                        profile: postData.profile,
-                        text: postData.text,
-                        image: postData.image
-                    }
-                });
-
-                break;
-
-            case 201:
-                response.json({
-                    result: 201,
-                    message: 'Post does not exist'
-                });
-
-                break;
-
-        }
-
-    } catch(error) { next(error); }
-
-};
-
-/*
 GET /post/image/:post/:image
 
 Get image file.
@@ -238,55 +283,10 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
 };
 
-/*
-GET /post/feed
-
-Get feed.
-
-Request Header
-token : string
-
-Request Query
-start : number (starts from 0)
-count : number
-
-Response JSON
-{post: number[]}
-*/
-const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
-
-    const user = response.locals.user;
-    const start = Number(request.query.start);
-    const count = Number(request.query.count);
-
-    // type check
-    if(isNaN(start) || isNaN(count)) {
-        response.status(400).end();
-        return;
-    }
-
-    // auth check
-    if(user === null) {
-        response.status(401).end();
-        return;
-    }
-
-    utility.print(`GET /post/feed user: ${user}`);
-
-    try {
-
-        const feedData: number[] = await postController.getFeed(user, start, count);
-
-        response.json({ post: feedData });
-
-    } catch(error) { next(error); }
-
-};
-
 export default {
     post,
-    getUser,
     getData,
-    getImage,
-    getFeed
+    getFeed,
+    getUser,
+    getImage
 };
