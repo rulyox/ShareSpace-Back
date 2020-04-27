@@ -132,7 +132,7 @@ Request Param
 id : number
 
 Response JSON
-{result: number, message: string, data: {user: number, name: string, text: string, image: string[]}}
+{result: number, message: string, data: {user: number, name: string, profile: string, text: string, image: string[]}}
 
 Result Code
 101 : OK
@@ -159,7 +159,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const postData: {result: number, user?: number, name?: string, text?: string, image?: string[]} = await postController.getPostData(id);
+        const postData: {result: number, user?: number, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
 
         switch(postData.result) {
 
@@ -170,6 +170,7 @@ const getData = async (request: express.Request, response: express.Response, nex
                     data: {
                         user: postData.user,
                         name: postData.name,
+                        profile: postData.profile,
                         text: postData.text,
                         image: postData.image
                     }

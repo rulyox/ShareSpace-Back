@@ -76,6 +76,20 @@ Sign up.
 201 : Email exists
 ```
 
+### GET /user/image/:id
+
+Get profile image.
+
+* Request Param
+```
+id : number
+```
+
+Response
+```
+image file
+```
+
 ### POST /user/image
 
 Add profile image.
@@ -109,7 +123,8 @@ id : number
 * Response JSON
 ```json
 {
-  "name": "string"
+  "name": "string",
+  "image": "string"
 }
 ```
 
@@ -192,7 +207,13 @@ id : number
 {
   "result": "number",
   "message": "string",
-  "data": "{user: number, name: string, text: string, image: string[]}"
+  "data": {
+    "user": "number",
+    "name": "string",
+    "profile": "string",
+    "text": "string",
+    "image": "string[]"
+  }
 }
 ```
 

@@ -19,7 +19,7 @@ const selectPostByUserInRange = (user: number, start: number, count: number): st
     LIMIT ${start}, ${count};`;
 
 const selectPostData = (id: number): string =>
-    `SELECT user.id AS user, user.name AS name, post.text AS text
+    `SELECT user.id AS user, user.name AS name, user.image AS profile, post.text AS text
     FROM post, user
     WHERE post.user = user.id AND post.id = ${id};`;
 

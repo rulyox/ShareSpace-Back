@@ -2,6 +2,8 @@ import express from 'express';
 import userUtility from './user-utility';
 import userController from './user-controller';
 import utility from "../utility";
+import path from "path";
+import dataConfig from "../../config/data.json";
 
 /*
 POST /user/token
@@ -146,6 +148,47 @@ const post = async (request: express.Request, response: express.Response, next: 
 };
 
 /*
+GET /user/image/:id
+
+Get profile image.
+
+Request Param
+id : number
+
+Response
+image file
+*/
+const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    const id = Number(request.params.id);
+
+    // type check
+    if(isNaN(id)) {
+        response.status(400).end();
+        return;
+    }
+
+    utility.print(`GET /user/image ${id}`);
+
+    try {
+
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+
+        // user exist check
+        if(!userDataResult.result) {
+            response.status(404).end();
+            return;
+        }
+
+        const image = userDataResult.image;
+
+        response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image!));
+
+    } catch(error) { next(error); }
+
+};
+
+/*
 POST /user/image
 
 Add profile image.
@@ -191,7 +234,7 @@ Request Param
 id : number
 
 Response JSON
-{name: string}
+{name: string, image: string}
 */
 const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -207,7 +250,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const userDataResult: {result: boolean, email? :string, name?: string} = await userController.getUserData(id);
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
 
         // user exist check
         if(!userDataResult.result) {
@@ -215,7 +258,10 @@ const getData = async (request: express.Request, response: express.Response, nex
             return;
         }
 
-        response.json({ name: userDataResult.name! });
+        response.json({
+            name: userDataResult.name!,
+            image: userDataResult.image!,
+        });
 
     } catch(error) { next(error); }
 
@@ -225,6 +271,7 @@ export default {
     postToken,
     get,
     post,
+    getImage,
     postImage,
     getData
 };

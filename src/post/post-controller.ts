@@ -73,13 +73,13 @@ Result Code
 101 : OK
 201 : Post does not exist
 */
-const getPostData = (id: number): Promise<{result: number, user?: number, name?: string, text?: string, image?: string[]}> => {
+const getPostData = (id: number): Promise<{result: number, user?: number, name?: string, profile?: string, text?: string, image?: string[]}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
             // get data of a post
-            const postDataQuery: {user: number, name: string, text: string}[] = (await mysqlManager.execute(postSQL.selectPostData(id)));
+            const postDataQuery: {user: number, name: string, profile: string, text: string}[] = (await mysqlManager.execute(postSQL.selectPostData(id)));
 
             if(postDataQuery.length === 1) {
 
@@ -94,6 +94,7 @@ const getPostData = (id: number): Promise<{result: number, user?: number, name?:
                     result: 101,
                     user: postDataQuery[0].user,
                     name: postDataQuery[0].name,
+                    profile: postDataQuery[0].profile,
                     text: postDataQuery[0].text,
                     image: imageList
                 });
