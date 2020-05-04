@@ -2,6 +2,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mysqlManager from './src/mysql-manager';
 import api from './src/api';
+import middleware from './src/middleware';
 import utility from './src/utility';
 import serverConfig from './config/server.json';
 
@@ -14,12 +15,12 @@ const port = serverConfig.port;
 
 // middleware
 app.use(bodyParser.json());
-app.use(utility.authChecker);
+app.use(middleware.authChecker);
 
 // route
 app.use('/api', api);
 
 // error handler
-app.use(utility.errorHandler);
+app.use(middleware.errorHandler);
 
 app.listen(port, () => utility.print(`Server listening on port ${port}...`));
