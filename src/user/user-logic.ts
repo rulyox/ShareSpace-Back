@@ -73,7 +73,7 @@ Request Header
 token : string
 
 Response JSON
-{id: number, email: string, name: string}
+{access: string, email: string, name: string}
 */
 const get = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -89,10 +89,10 @@ const get = async (request: express.Request, response: express.Response, next: e
 
     try {
 
-        const userDataResult: {result: boolean, email? :string, name?: string} = await userController.getUserData(user);
+        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userController.getUserData(user);
 
         response.json({
-            id: user,
+            access: userDataResult.access!,
             email: userDataResult.email!,
             name: userDataResult.name!
         });
@@ -132,7 +132,9 @@ const post = async (request: express.Request, response: express.Response, next: 
 
     try {
 
-        const addUserResult: number = await userController.createUser(email, pw, name);
+        const access: string = await userController.createRandomAccess();
+
+        const addUserResult: number = await userController.createUser(access, email, pw, name);
 
         let resultMessage: string = '';
         if(addUserResult === 101) resultMessage = 'OK';
@@ -148,37 +150,41 @@ const post = async (request: express.Request, response: express.Response, next: 
 };
 
 /*
-GET /user/data/:id
+GET /user/data/:access
 
 Get user data.
 
 Request Param
-id : number
+access : string
 
 Response JSON
 {name: string, image: string}
 */
 const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
-    const id = Number(request.params.id);
+    const access = request.params.access;
 
     // type check
-    if(isNaN(id)) {
+    if(access === null) {
         response.status(400).end();
         return;
     }
 
-    utility.print(`GET /user/data ${id}`);
+    utility.print(`GET /user/data ${access}`);
 
     try {
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
 
         // user exist check
-        if(!userDataResult.result) {
+        if(!accessResult.result || accessResult.id === undefined) {
             response.status(404).end();
             return;
         }
+
+        const id = accessResult.id;
+
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
 
         response.json({
             name: userDataResult.name!,
@@ -190,39 +196,49 @@ const getData = async (request: express.Request, response: express.Response, nex
 };
 
 /*
-GET /user/image/:id
+GET /user/image/:access
 
 Get profile image.
 
 Request Param
-id : number
+access : string
 
 Response
 image file
 */
 const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
-    const id = Number(request.params.id);
+    const access = request.params.access;
 
     // type check
-    if(isNaN(id)) {
+    if(access === null) {
         response.status(400).end();
         return;
     }
 
-    utility.print(`GET /user/image ${id}`);
+    utility.print(`GET /user/image ${access}`);
 
     try {
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
 
         // user exist check
-        if(!userDataResult.result) {
+        if(!accessResult.result || accessResult.id === undefined) {
             response.status(404).end();
             return;
         }
 
+        const id = accessResult.id;
+
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+
         const image = userDataResult.image;
+
+        // no profile image
+        if(image === null) {
+            response.end();
+            return
+        }
 
         response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image!));
 

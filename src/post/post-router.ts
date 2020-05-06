@@ -7,15 +7,15 @@ const router = express.Router();
 router.post('/', postLogic.post);
 
 // Get post data.
-router.get('/data/:id', postLogic.getData);
+router.get('/data/:access', postLogic.getData);
 
 // Get feed.
 router.get('/feed', postLogic.getFeed);
 
 // Get post list by user.
-router.get('/user/:id', postLogic.getUser);
+router.get('/user/:access', postLogic.getUser);
 
 // Get image file.
-router.get('/image/:post/:image', postLogic.getImage);
+router.get('/image/:access/:image', postLogic.getImage);
 
 export default router;

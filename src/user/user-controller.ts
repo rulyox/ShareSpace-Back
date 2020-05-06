@@ -1,4 +1,5 @@
 import path from 'path';
+import crypto from 'crypto';
 import userUtility from './user-utility';
 import mysqlManager from '../mysql-manager';
 import userSQL from './user-sql';
@@ -68,7 +69,7 @@ Result Code
 101 : OK
 201 : Email exists
 */
-const createUser = (email: string, pw: string, name: string): Promise<number> => {
+const createUser = (access: string, email: string, pw: string, name: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -76,11 +77,11 @@ const createUser = (email: string, pw: string, name: string): Promise<number> =>
             // check if same email exists
             const emailCheckQuery = await mysqlManager.execute(userSQL.checkEmail(email));
 
-            if(emailCheckQuery?.length === 0) {
+            if(emailCheckQuery.length === 0) {
 
-                const userAddQuery = await mysqlManager.execute(userSQL.add(email, pw, name));
+                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, name));
 
-                if(userAddQuery?.affectedRows === 1) resolve(101);
+                if(userAddQuery.affectedRows === 1) resolve(101);
                 else reject('User Add Failed')
 
             } else resolve(201);
@@ -135,7 +136,7 @@ const addProfileImage = (user: number, image: any): Promise<void> => {
     });
 };
 
-const getUserData = (id: number): Promise<{result: boolean, email?: string, name?: string, image?: string}> => {
+const getUserData = (id: number): Promise<{result: boolean, access?: string, email?: string, name?: string, image?: string}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -152,6 +153,7 @@ const getUserData = (id: number): Promise<{result: boolean, email?: string, name
 
                 resolve({
                     result: true,
+                    access: userData?.access,
                     email: userData?.email,
                     name: userData?.name,
                     image: userData?.image
@@ -164,11 +166,64 @@ const getUserData = (id: number): Promise<{result: boolean, email?: string, name
     });
 };
 
+const getUserFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const getUserQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+
+            if(getUserQuery?.length === 0) { // if id does not exist
+
+                resolve({ result: false });
+
+            } else {
+
+                const userData = getUserQuery[0];
+
+                resolve({
+                    result: true,
+                    id: userData?.id
+                });
+
+            }
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const createRandomAccess = (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let access;
+            let getAccessQuery;
+
+            do {
+
+                const random = crypto.randomBytes(10);
+                access = 'u' + random.toString('hex');
+
+                getAccessQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+
+            } while(getAccessQuery.length !== 0);
+
+            resolve(access);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
 export default {
     checkLogin,
     checkToken,
     createUser,
     parseProfileForm,
     addProfileImage,
-    getUserData
+    getUserData,
+    getUserFromAccess,
+    createRandomAccess
 };

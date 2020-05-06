@@ -2,6 +2,7 @@ import express from 'express';
 import path from 'path';
 import postUtility from './post-utility';
 import postController from './post-controller';
+import userController from '../user/user-controller';
 import utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -18,7 +19,10 @@ text : string
 files
 
 Response JSON
-{postId: number}
+{result: number, message: string}
+
+Result Code
+101 : OK
 */
 const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -35,10 +39,16 @@ const post = async (request: express.Request, response: express.Response, next: 
 
     try {
 
-        const postId: number = await postController.writePost(user, formData.text, formData.images);
+        const access: string = await postController.createRandomAccess();
+
+        const addPostResult: number = await postController.writePost(access, user, formData.text, formData.images);
+
+        let resultMessage: string = '';
+        if(addPostResult === 101) resultMessage = 'OK';
 
         response.json({
-            postId: postId
+            result: addPostResult,
+            message: resultMessage
         });
 
     } catch(error) { next(error); }
@@ -46,7 +56,7 @@ const post = async (request: express.Request, response: express.Response, next: 
 };
 
 /*
-GET /post/data/:id
+GET /post/data/:access
 
 Get post data.
 
@@ -54,10 +64,10 @@ Request Header
 token : string
 
 Request Param
-id : number
+access : string
 
 Response JSON
-{result: number, message: string, data: {user: number, name: string, profile: string, text: string, image: string[]}}
+{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string[]}}
 
 Result Code
 101 : OK
@@ -66,10 +76,10 @@ Result Code
 const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const user = response.locals.user;
-    const id = Number(request.params.id);
+    const access = request.params.access;
 
     // type check
-    if(isNaN(id)) {
+    if(access === null) {
         response.status(400).end();
         return;
     }
@@ -80,11 +90,21 @@ const getData = async (request: express.Request, response: express.Response, nex
         return;
     }
 
-    utility.print(`GET /post user: ${user} id: ${id}`);
+    utility.print(`GET /post user: ${user} access: ${access}`);
 
     try {
 
-        const postData: {result: number, user?: number, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
+        const accessResult: {result: boolean, id?: number} = await postController.getPostFromAccess(access);
+
+        // post exist check
+        if(!accessResult.result || accessResult.id === undefined) {
+            response.status(404).end();
+            return;
+        }
+
+        const id = accessResult.id;
+
+        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
 
         switch(postData.result) {
 
@@ -130,7 +150,7 @@ start : number (starts from 0)
 count : number
 
 Response JSON
-{post: number[]}
+{post: string[]}
 */
 const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -154,7 +174,7 @@ const getFeed = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const feedData: number[] = await postController.getFeed(user, start, count);
+        const feedData: string[] = await postController.getFeed(user, start, count);
 
         response.json({ post: feedData });
 
@@ -163,7 +183,7 @@ const getFeed = async (request: express.Request, response: express.Response, nex
 };
 
 /*
-GET /post/user/:id
+GET /post/user/:access
 
 Get post list by user.
 
@@ -171,14 +191,14 @@ Request Header
 token : string
 
 Request Param
-id : number
+access : string
 
 Request Query
 start : number (starts from 0)
 count : number
 
 Response JSON
-{result: number, message: string, total: number, list: number[]}
+{result: number, message: string, total: number, list: string[]}
 
 Result Code
 101 : OK
@@ -187,12 +207,12 @@ Result Code
 const getUser = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const user = response.locals.user;
-    const id = Number(request.params.id);
+    const access = request.params.access;
     const start = Number(request.query.start);
     const count = Number(request.query.count);
 
     // type check
-    if(isNaN(id) || isNaN(start) || isNaN(count)) {
+    if(access === null || isNaN(start) || isNaN(count)) {
         response.status(400).end();
         return;
     }
@@ -207,6 +227,16 @@ const getUser = async (request: express.Request, response: express.Response, nex
 
     try {
 
+        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
+
+        // user exist check
+        if(!accessResult.result || accessResult.id === undefined) {
+            response.status(404).end();
+            return;
+        }
+
+        const id = accessResult.id;
+
         // get number of posts by user
         const postCount = await postController.getNumberOfPostByUser(id);
 
@@ -214,7 +244,7 @@ const getUser = async (request: express.Request, response: express.Response, nex
         if(start >= 0 && start < postCount) {
 
             // get post list by user
-            const postList: number[] = await postController.getPostByUser(id, start, count);
+            const postList: string[] = await postController.getPostByUser(id, start, count);
 
             response.json({
                 result: 101,
@@ -238,7 +268,7 @@ const getUser = async (request: express.Request, response: express.Response, nex
 };
 
 /*
-GET /post/image/:post/:image
+GET /post/image/:access/:image
 
 Get image file.
 
@@ -246,7 +276,7 @@ Request Header
 token : string
 
 Request Param
-post : number
+access : string
 image: string
 
 Response
@@ -255,11 +285,11 @@ image file
 const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const user = response.locals.user;
-    const post = Number(request.params.post);
-    const image = request.params.image; // always string
+    const access = request.params.access;
+    const image = request.params.image;
 
     // type check
-    if(isNaN(post)) {
+    if(access === null || image === null) {
         response.status(400).end();
         return;
     }
@@ -270,11 +300,21 @@ const getImage = async (request: express.Request, response: express.Response, ne
         return;
     }
 
-    utility.print(`GET /post/image user: ${user} post: ${post} image: ${image}`);
+    utility.print(`GET /post/image user: ${user} access: ${access} image: ${image}`);
 
     try {
 
-        const imageResult: boolean = await postController.checkImage(post, image);
+        const accessResult: {result: boolean, id?: number} = await postController.getPostFromAccess(access);
+
+        // post exist check
+        if(!accessResult.result || accessResult.id === undefined) {
+            response.status(404).end();
+            return;
+        }
+
+        const id = accessResult.id;
+
+        const imageResult: boolean = await postController.checkImage(id, image);
 
         if(imageResult) response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image));
         else response.status(404).end();

@@ -13,10 +13,10 @@ router.get('/', userLogic.get);
 router.post('/', userLogic.post);
 
 // Get user data.
-router.get('/data/:id', userLogic.getData);
+router.get('/data/:access', userLogic.getData);
 
 // Get profile image.
-router.get('/image/:id', userLogic.getImage);
+router.get('/image/:access', userLogic.getImage);
 
 // Add profile image.
 router.post('/image', userLogic.postImage);

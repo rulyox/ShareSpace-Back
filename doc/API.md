@@ -43,7 +43,7 @@ token : string
 * Response JSON
 ```json
 {
-  "id": "number",
+  "access": "string",
   "email": "string",
   "name": "string"
 }
@@ -76,13 +76,13 @@ Sign up.
 201 : Email exists
 ```
 
-### GET /user/data/:id
+### GET /user/data/:access
 
 Get user data.
 
 * Request Param
 ```
-id : number
+access : string
 ```
 
 * Response JSON
@@ -93,13 +93,13 @@ id : number
 }
 ```
 
-### GET /user/image/:id
+### GET /user/image/:access
 
 Get profile image.
 
 * Request Param
 ```
-id : number
+access : string
 ```
 
 Response
@@ -148,11 +148,17 @@ files
 * Response JSON
 ```json
 {
-  "postId": "number"
+  "result": "number",
+  "message": "string"
 }
 ```
 
-### GET /post/data/:id
+* Result Code
+```
+101 : OK
+```
+
+### GET /post/data/:access
 
 Get post data.
 
@@ -163,22 +169,28 @@ token : string
   
 * Request Param
 ```
-id : number
+access : string
 ```
-  
+
 * Response JSON
 ```json
 {
   "result": "number",
   "message": "string",
   "data": {
-    "user": "number",
+    "user": "string",
     "name": "string",
     "profile": "string",
     "text": "string",
     "image": "string[]"
   }
 }
+```
+
+* Result Code
+```
+101 : OK
+201 : Post does not exist
 ```
 
 ### GET /post/feed
@@ -199,11 +211,11 @@ count : number
 * Response JSON
 ```json
 {
-  "post": "number[]"
+  "post": "string[]"
 }
 ```
 
-### GET /post/user/:id
+### GET /post/user/:access
 
 Get post list by user.
 
@@ -214,7 +226,7 @@ token : string
 
 * Request Param
 ```
-id : number
+access : string
 ```
 
 * Request Query
@@ -229,7 +241,7 @@ count : number
   "result": "number",
   "message": "string",
   "total": "number",
-  "list": "number[]"
+  "list": "string[]"
 }
 ```
 
@@ -239,13 +251,7 @@ count : number
 201 : Wrong range
 ```
 
-* Result Code
-```
-101 : OK
-201 : Post does not exist
-```
-
-### GET /post/image/:post/:image
+### GET /post/image/:access/:image
 
 Get image file.
 
@@ -256,7 +262,7 @@ token : string
 
 Request Param
 ```
-post : number
+access : string
 image: string
 ```
 

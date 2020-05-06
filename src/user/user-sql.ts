@@ -3,6 +3,11 @@ const select = (email: string, pw: string): string =>
     FROM user
     WHERE email = "${email}" AND pw = "${pw}";`;
 
+const selectIdByAccess = (access: string): string =>
+    `SELECT id
+    FROM user
+    WHERE access = "${access}";`;
+
 const selectByID = (id: number): string =>
     `SELECT *
     FROM user
@@ -13,9 +18,9 @@ const checkEmail = (email: string): string =>
     FROM user
     WHERE email = "${email}";`;
 
-const add = (email: string, pw: string, name: string): string =>
+const add = (access: string, email: string, pw: string, name: string): string =>
     `INSERT INTO user
-    VALUES (NULL, "${email}", "${pw}", "${name}", NULL);`;
+    VALUES (NULL, "${access}", "${email}", "${pw}", "${name}", NULL);`;
 
 const addProfileImage = (id: number, image: string): string =>
     `UPDATE user
@@ -24,6 +29,7 @@ const addProfileImage = (id: number, image: string): string =>
 
 export default {
     select,
+    selectIdByAccess,
     selectByID,
     checkEmail,
     add,
