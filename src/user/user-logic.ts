@@ -1,9 +1,9 @@
 import express from 'express';
+import path from 'path';
+import userDao from './user-dao';
 import userUtility from './user-utility';
-import userController from './user-controller';
-import utility from "../utility";
-import path from "path";
-import dataConfig from "../../config/data.json";
+import utility from '../utility';
+import dataConfig from '../../config/data.json';
 
 /*
 POST /user/token
@@ -35,7 +35,7 @@ const postToken = async (request: express.Request, response: express.Response, n
 
     try {
 
-        const loginResultCode: number = await userController.checkLogin(email, pw);
+        const loginResultCode: number = await userDao.checkLogin(email, pw);
 
         switch(loginResultCode) {
 
@@ -89,7 +89,7 @@ const get = async (request: express.Request, response: express.Response, next: e
 
     try {
 
-        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userController.getUserData(user);
+        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDao.getUserData(user);
 
         response.json({
             access: userDataResult.access!,
@@ -132,9 +132,7 @@ const post = async (request: express.Request, response: express.Response, next: 
 
     try {
 
-        const access: string = await userController.createRandomAccess();
-
-        const addUserResult: number = await userController.createUser(access, email, pw, name);
+        const addUserResult: number = await userDao.createUser(email, pw, name);
 
         let resultMessage: string = '';
         if(addUserResult === 101) resultMessage = 'OK';
@@ -174,7 +172,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -184,7 +182,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
         const id = accessResult.id;
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDao.getUserData(id);
 
         response.json({
             name: userDataResult.name!,
@@ -220,7 +218,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
     try {
 
-        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -230,7 +228,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
         const id = accessResult.id;
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userController.getUserData(id);
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDao.getUserData(id);
 
         const image = userDataResult.image;
 
@@ -263,7 +261,7 @@ Response JSON
 const postImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const user = response.locals.user;
-    const formData: {image: object} = await userController.parseProfileForm(request);
+    const formData: {image: object} = await userUtility.parseForm(request);
 
     // auth check
     if(user === null) {
@@ -275,7 +273,7 @@ const postImage = async (request: express.Request, response: express.Response, n
 
     try {
 
-        await userController.addProfileImage(user, formData.image);
+        await userDao.addProfileImage(user, formData.image);
 
         response.json({ 'result': true });
 

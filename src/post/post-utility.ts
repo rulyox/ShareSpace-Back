@@ -1,5 +1,8 @@
 import express from 'express';
 import formidable from 'formidable';
+import crypto from 'crypto';
+import mysqlManager from '../mysql-manager';
+import postSQL from './post-sql';
 
 const parseForm = (request: express.Request): Promise<{text: string, images: object[]}> => {
     return new Promise(async (resolve, reject) => {
@@ -31,6 +34,31 @@ const parseForm = (request: express.Request): Promise<{text: string, images: obj
     });
 };
 
+const createRandomAccess = (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let access;
+            let getAccessQuery;
+
+            do {
+
+                const random = crypto.randomBytes(10);
+                access = 'p' + random.toString('hex');
+
+                getAccessQuery = (await mysqlManager.execute(postSQL.selectIdByAccess(access)));
+
+            } while(getAccessQuery.length !== 0);
+
+            resolve(access);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
 export default {
-    parseForm
+    parseForm,
+    createRandomAccess
 };

@@ -1,8 +1,8 @@
 import express from 'express';
 import path from 'path';
+import postDao from './post-dao';
 import postUtility from './post-utility';
-import postController from './post-controller';
-import userController from '../user/user-controller';
+import userDao from '../user/user-dao';
 import utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -39,9 +39,7 @@ const post = async (request: express.Request, response: express.Response, next: 
 
     try {
 
-        const access: string = await postController.createRandomAccess();
-
-        const addPostResult: number = await postController.writePost(access, user, formData.text, formData.images);
+        const addPostResult: number = await postDao.writePost(user, formData.text, formData.images);
 
         let resultMessage: string = '';
         if(addPostResult === 101) resultMessage = 'OK';
@@ -94,7 +92,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const accessResult: {result: boolean, id?: number} = await postController.getPostFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
         // post exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -104,7 +102,7 @@ const getData = async (request: express.Request, response: express.Response, nex
 
         const id = accessResult.id;
 
-        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postController.getPostData(id);
+        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDao.getPostData(id);
 
         switch(postData.result) {
 
@@ -174,7 +172,7 @@ const getFeed = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const feedData: string[] = await postController.getFeed(user, start, count);
+        const feedData: string[] = await postDao.getFeed(user, start, count);
 
         response.json({ post: feedData });
 
@@ -227,7 +225,7 @@ const getUser = async (request: express.Request, response: express.Response, nex
 
     try {
 
-        const accessResult: {result: boolean, id?: number} = await userController.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -238,13 +236,13 @@ const getUser = async (request: express.Request, response: express.Response, nex
         const id = accessResult.id;
 
         // get number of posts by user
-        const postCount = await postController.getNumberOfPostByUser(id);
+        const postCount = await postDao.getNumberOfPostByUser(id);
 
         // start should be 0 from postCount-1
         if(start >= 0 && start < postCount) {
 
             // get post list by user
-            const postList: string[] = await postController.getPostByUser(id, start, count);
+            const postList: string[] = await postDao.getPostByUser(id, start, count);
 
             response.json({
                 result: 101,
@@ -304,7 +302,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
     try {
 
-        const accessResult: {result: boolean, id?: number} = await postController.getPostFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
         // post exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -314,7 +312,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
         const id = accessResult.id;
 
-        const imageResult: boolean = await postController.checkImage(id, image);
+        const imageResult: boolean = await postDao.checkImage(id, image);
 
         if(imageResult) response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image));
         else response.status(404).end();

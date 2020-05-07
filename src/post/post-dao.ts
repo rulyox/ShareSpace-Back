@@ -1,6 +1,6 @@
 import path from 'path';
-import crypto from 'crypto';
 import mysqlManager from '../mysql-manager';
+import postUtility from './post-utility';
 import postSQL from './post-sql';
 import utility from '../utility';
 import dataConfig from '../../config/data.json';
@@ -9,10 +9,13 @@ import dataConfig from '../../config/data.json';
 Result Code
 101 : OK
 */
-const writePost = (access: string, user: number, text: string, imageList: any[]): Promise<number> => {
+const writePost = (user: number, text: string, imageList: any[]): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
+
+            // generate random access key
+            const access: string = await postUtility.createRandomAccess();
 
             // add post to db
             const postAddQuery = await mysqlManager.execute(postSQL.add(access, user, text));
@@ -32,41 +35,6 @@ const writePost = (access: string, user: number, text: string, imageList: any[])
             }
 
             resolve(101);
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-const getNumberOfPostByUser = (user: number): Promise<number> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            // get number of posts by user
-            const postCountQuery = (await mysqlManager.execute(postSQL.selectNumberOfPostByUser(user)))[0];
-            const postCount = postCountQuery.count;
-
-            resolve(postCount);
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-const getPostByUser = (user: number, start: number, count: number): Promise<string[]> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            // get post list by user
-            const postQuery: {access: string}[] = await mysqlManager.execute(postSQL.selectPostByUserInRange(user, start, count));
-
-            // save post id to list
-            const postList = [];
-            for(const post of postQuery) postList.push(post.access);
-
-            resolve(postList);
 
         } catch(error) { reject(error); }
 
@@ -115,39 +83,6 @@ const getPostData = (id: number): Promise<{result: number, user?: string, name?:
     });
 };
 
-const checkImage = (post: number, image: string): Promise<boolean> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            // get data of a post
-            const imageQuery: {image: string}[] = (await mysqlManager.execute(postSQL.selectImageFile(post, image)));
-
-            if(imageQuery.length === 1) resolve(true);
-            else resolve(false);
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-const getFeed = (user: number, start: number, count: number): Promise<string[]> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            const feedQuery = await mysqlManager.execute(postSQL.selectFeedInRange(user, start, count));
-
-            const postList = [];
-            for(const post of feedQuery) postList.push(post.access);
-
-            resolve(postList);
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
 const getPostFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
     return new Promise(async (resolve, reject) => {
 
@@ -175,24 +110,68 @@ const getPostFromAccess = (access: string): Promise<{result: boolean, id?: numbe
     });
 };
 
-const createRandomAccess = (): Promise<string> => {
+const getFeed = (user: number, start: number, count: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            let access;
-            let getAccessQuery;
+            const feedQuery = await mysqlManager.execute(postSQL.selectFeedInRange(user, start, count));
 
-            do {
+            const postList = [];
+            for(const post of feedQuery) postList.push(post.access);
 
-                const random = crypto.randomBytes(10);
-                access = 'p' + random.toString('hex');
+            resolve(postList);
 
-                getAccessQuery = (await mysqlManager.execute(postSQL.selectIdByAccess(access)));
+        } catch(error) { reject(error); }
 
-            } while(getAccessQuery.length !== 0);
+    });
+};
 
-            resolve(access);
+const getNumberOfPostByUser = (user: number): Promise<number> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // get number of posts by user
+            const postCountQuery = (await mysqlManager.execute(postSQL.selectNumberOfPostByUser(user)))[0];
+            const postCount = postCountQuery.count;
+
+            resolve(postCount);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const getPostByUser = (user: number, start: number, count: number): Promise<string[]> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // get post list by user
+            const postQuery: {access: string}[] = await mysqlManager.execute(postSQL.selectPostByUserInRange(user, start, count));
+
+            // save post id to list
+            const postList = [];
+            for(const post of postQuery) postList.push(post.access);
+
+            resolve(postList);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const checkImage = (post: number, image: string): Promise<boolean> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // get data of a post
+            const imageQuery: {image: string}[] = (await mysqlManager.execute(postSQL.selectImageFile(post, image)));
+
+            if(imageQuery.length === 1) resolve(true);
+            else resolve(false);
 
         } catch(error) { reject(error); }
 
@@ -201,11 +180,10 @@ const createRandomAccess = (): Promise<string> => {
 
 export default {
     writePost,
+    getPostData,
+    getPostFromAccess,
+    getFeed,
     getNumberOfPostByUser,
     getPostByUser,
-    getPostData,
-    checkImage,
-    getFeed,
-    getPostFromAccess,
-    createRandomAccess
+    checkImage
 };

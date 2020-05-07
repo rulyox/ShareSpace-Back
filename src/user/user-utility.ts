@@ -1,4 +1,8 @@
+import express from 'express';
+import formidable from 'formidable';
 import crypto from 'crypto';
+import mysqlManager from '../mysql-manager';
+import userSQL from './user-sql';
 import serverConfig from '../../config/server.json';
 
 const createToken = (email: string, pw: string): string => {
@@ -37,8 +41,58 @@ const decryptAES = (cipherText: string): string => {
 
 };
 
+const parseForm = (request: express.Request): Promise<{image: object}> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const formParser = new formidable.IncomingForm();
+            formParser.parse(request, function (error, fields, files) {
+
+                if(error) {
+                    reject(error);
+                    return
+                }
+
+                resolve({
+                    image: Object.values(files)[0]
+                });
+
+            });
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const createRandomAccess = (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let access;
+            let getAccessQuery;
+
+            do {
+
+                const random = crypto.randomBytes(10);
+                access = 'u' + random.toString('hex');
+
+                getAccessQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+
+            } while(getAccessQuery.length !== 0);
+
+            resolve(access);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
 export default {
     createToken,
     encryptAES,
-    decryptAES
+    decryptAES,
+    parseForm,
+    createRandomAccess
 };

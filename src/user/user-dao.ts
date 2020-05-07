@@ -1,10 +1,7 @@
 import path from 'path';
-import crypto from 'crypto';
-import userUtility from './user-utility';
 import mysqlManager from '../mysql-manager';
+import userUtility from './user-utility';
 import userSQL from './user-sql';
-import express from 'express';
-import formidable from 'formidable';
 import utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -58,78 +55,6 @@ const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?:
                 });
 
             } else resolve({ auth: false });
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-/*
-Result Code
-101 : OK
-201 : Email exists
-*/
-const createUser = (access: string, email: string, pw: string, name: string): Promise<number> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            // check if same email exists
-            const emailCheckQuery = await mysqlManager.execute(userSQL.checkEmail(email));
-
-            if(emailCheckQuery.length === 0) {
-
-                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, name));
-
-                if(userAddQuery.affectedRows === 1) resolve(101);
-                else reject('User Add Failed')
-
-            } else resolve(201);
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-const parseProfileForm = (request: express.Request): Promise<{image: object}> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            const formParser = new formidable.IncomingForm();
-            formParser.parse(request, function (error, fields, files) {
-
-                if(error) {
-                    reject(error);
-                    return
-                }
-
-                resolve({
-                    image: Object.values(files)[0]
-                });
-
-            });
-
-        } catch(error) { reject(error); }
-
-    });
-};
-
-const addProfileImage = (user: number, image: any): Promise<void> => {
-    return new Promise(async (resolve, reject) => {
-
-        try {
-
-            const originalPath = image.path;
-            const imageName = `user_${user}.png`;
-
-            // save image to png file
-            await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
-
-            // add image to db
-            await mysqlManager.execute(userSQL.addProfileImage(user, imageName));
-
-            resolve();
 
         } catch(error) { reject(error); }
 
@@ -193,24 +118,51 @@ const getUserFromAccess = (access: string): Promise<{result: boolean, id?: numbe
     });
 };
 
-const createRandomAccess = (): Promise<string> => {
+/*
+Result Code
+101 : OK
+201 : Email exists
+*/
+const createUser = (email: string, pw: string, name: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            let access;
-            let getAccessQuery;
+            // generate random access key
+            const access: string = await userUtility.createRandomAccess();
 
-            do {
+            // check if same email exists
+            const emailCheckQuery = await mysqlManager.execute(userSQL.checkEmail(email));
 
-                const random = crypto.randomBytes(10);
-                access = 'u' + random.toString('hex');
+            if(emailCheckQuery.length === 0) {
 
-                getAccessQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, name));
 
-            } while(getAccessQuery.length !== 0);
+                if(userAddQuery.affectedRows === 1) resolve(101);
+                else reject('User Add Failed')
 
-            resolve(access);
+            } else resolve(201);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const addProfileImage = (user: number, image: any): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const originalPath = image.path;
+            const imageName = `user_${user}.png`;
+
+            // save image to png file
+            await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
+
+            // add image to db
+            await mysqlManager.execute(userSQL.addProfileImage(user, imageName));
+
+            resolve();
 
         } catch(error) { reject(error); }
 
@@ -220,10 +172,8 @@ const createRandomAccess = (): Promise<string> => {
 export default {
     checkLogin,
     checkToken,
-    createUser,
-    parseProfileForm,
-    addProfileImage,
     getUserData,
     getUserFromAccess,
-    createRandomAccess
+    createUser,
+    addProfileImage
 };

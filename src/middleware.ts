@@ -1,5 +1,5 @@
 import express from 'express';
-import userController from './user/user-controller';
+import userDao from './user/user-dao';
 import utility from './utility';
 
 const authChecker = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -11,7 +11,7 @@ const authChecker = async (request: express.Request, response: express.Response,
 
         if(typeof token === 'string') {
 
-            const tokenResult: {auth: boolean, id?: number, email?: string, name?: string} = await userController.checkToken(token);
+            const tokenResult: {auth: boolean, id?: number, email?: string, name?: string} = await userDao.checkToken(token);
 
             // auth check
             if(tokenResult.auth) user = tokenResult.id;
