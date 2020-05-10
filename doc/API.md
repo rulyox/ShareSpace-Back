@@ -193,6 +193,41 @@ access : string
 201 : Post does not exist
 ```
 
+### GET /post/preview/:access
+
+Get post preview.
+
+* Request Header
+```
+token : string
+```
+  
+* Request Param
+```
+access : string
+```
+
+* Response JSON
+```json
+{
+  "result": "number",
+  "message": "string",
+  "data": {
+    "user": "string",
+    "name": "string",
+    "profile": "string",
+    "text": "string",
+    "image": "string"
+  }
+}
+```
+
+* Result Code
+```
+101 : OK
+201 : Post does not exist
+```
+
 ### GET /post/feed
 
 Get feed.

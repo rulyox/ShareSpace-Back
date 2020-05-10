@@ -88,7 +88,7 @@ const getData = async (request: express.Request, response: express.Response, nex
         return;
     }
 
-    utility.print(`GET /post user: ${user} access: ${access}`);
+    utility.print(`GET /post/data user: ${user} access: ${access}`);
 
     try {
 
@@ -116,6 +116,92 @@ const getData = async (request: express.Request, response: express.Response, nex
                         profile: postData.profile,
                         text: postData.text,
                         image: postData.image
+                    }
+                });
+
+                break;
+
+            case 201:
+                response.json({
+                    result: 201,
+                    message: 'Post does not exist'
+                });
+
+                break;
+
+        }
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+GET /post/preview/:access
+
+Get post preview.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Response JSON
+{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string}}
+
+Result Code
+101 : OK
+201 : Post does not exist
+*/
+const getPreview = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    const user = response.locals.user;
+    const access = request.params.access;
+
+    // type check
+    if(access === null) {
+        response.status(400).end();
+        return;
+    }
+
+    // auth check
+    if(user === null) {
+        response.status(401).end();
+        return;
+    }
+
+    utility.print(`GET /post/preview user: ${user} access: ${access}`);
+
+    try {
+
+        const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
+
+        // post exist check
+        if(!accessResult.result || accessResult.id === undefined) {
+            response.status(404).end();
+            return;
+        }
+
+        const id = accessResult.id;
+
+        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDao.getPostData(id);
+
+        // create preview image from first image
+        let previewImage: string|null = null;
+        if(postData.image !== undefined && postData.image.length > 0) previewImage = postData.image[0];
+
+        switch(postData.result) {
+
+            case 101:
+                response.json({
+                    result: 101,
+                    message: 'OK',
+                    data: {
+                        user: postData.user,
+                        name: postData.name,
+                        profile: postData.profile,
+                        text: postData.text,
+                        image: previewImage
                     }
                 });
 
@@ -324,6 +410,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 export default {
     post,
     getData,
+    getPreview,
     getFeed,
     getUser,
     getImage
