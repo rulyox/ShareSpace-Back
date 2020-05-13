@@ -1,24 +1,24 @@
 import express from 'express';
-import postFunction from './post-function';
+import postRequest from './post-request';
 
 const router = express.Router();
 
 // Write new post.
-router.post('/', postFunction.post);
+router.post('/', postRequest.post);
 
 // Get post data.
-router.get('/data/:access', postFunction.getData);
+router.get('/data/:access', postRequest.getData);
 
 // Get post preview.
-router.get('/preview/:access', postFunction.getPreview);
+router.get('/preview/:access', postRequest.getPreview);
 
 // Get feed.
-router.get('/feed', postFunction.getFeed);
+router.get('/feed', postRequest.getFeed);
 
 // Get post list by user.
-router.get('/user/:access', postFunction.getUser);
+router.get('/user/:access', postRequest.getUser);
 
 // Get image file.
-router.get('/image/:access/:image', postFunction.getImage);
+router.get('/image/:access/:image', postRequest.getImage);
 
 export default router;
