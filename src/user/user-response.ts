@@ -13,7 +13,8 @@ Response JSON
 
 Result Code
 101 : OK
-201 : Wrong email or password
+201 : Wrong email
+202 : Wrong password
 */
 const postToken = async (response: express.Response, email: string, pw: string) => {
 
@@ -38,11 +39,18 @@ const postToken = async (response: express.Response, email: string, pw: string) 
         case 201:
             response.json({
                 result: 201,
-                message: 'Wrong email or password'
+                message: 'Wrong email'
             });
 
             break;
 
+        case 202:
+            response.json({
+                result: 202,
+                message: 'Wrong password'
+            });
+
+            break;
     }
 
 };

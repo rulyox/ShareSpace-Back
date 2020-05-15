@@ -41,6 +41,20 @@ const decryptAES = (cipherText: string): string => {
 
 };
 
+const createRandomSalt = () => {
+
+    const random = crypto.randomBytes(10);
+    return random.toString('hex');
+
+};
+
+const hash = (plainText: string, salt: string) => {
+
+    const cipherText = crypto.pbkdf2Sync(plainText, salt, 100000, 64, 'sha512');
+    return cipherText.toString('hex');
+
+};
+
 const parseForm = (request: express.Request): Promise<{image: object}> => {
     return new Promise(async (resolve, reject) => {
 
@@ -93,6 +107,8 @@ export default {
     createToken,
     encryptAES,
     decryptAES,
+    createRandomSalt,
+    hash,
     parseForm,
     createRandomAccess
 };

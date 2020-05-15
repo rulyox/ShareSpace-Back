@@ -13,7 +13,8 @@ Response JSON
 
 Result Code
 101 : OK
-201 : Wrong email or password
+201 : Wrong email
+202 : Wrong password
 */
 const postToken = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 

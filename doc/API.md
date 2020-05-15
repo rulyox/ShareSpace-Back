@@ -28,7 +28,8 @@ Check login and create token.
 * Result Code
 ```
 101 : OK
-201 : Wrong email or password
+201 : Wrong email
+202 : Wrong password
 ```
 
 ### GET /user

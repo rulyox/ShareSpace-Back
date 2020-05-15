@@ -8,17 +8,27 @@ import dataConfig from '../../config/data.json';
 /*
 Result Code
 101 : OK
-201 : Wrong email or password
+201 : Wrong email
+202 : Wrong password
 */
 const checkLogin = (email: string, pw: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const loginQuery = await mysqlManager.execute(userSQL.select(email, pw));
+            // hash password
+            const pwResult: {result: boolean, pw?: string} = await getHashedPassword(email, pw);
 
-            if(loginQuery.length === 1) resolve(101);
-            else resolve(201);
+            if(pwResult.result) {
+
+                const hashedPassword = pwResult.pw!;
+
+                const loginQuery = await mysqlManager.execute(userSQL.select(email, hashedPassword));
+
+                if(loginQuery.length === 1) resolve(101);
+                else resolve(202);
+
+            } else resolve(201);
 
         } catch(error) { reject(error); }
 
@@ -46,7 +56,13 @@ const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?:
             const loginResult: number = await checkLogin(email, pw);
             if(loginResult === 101) {
 
-                const loginQuery = (await mysqlManager.execute(userSQL.select(email, pw)))[0];
+                // hash password
+                const pwResult: {result: boolean, pw?: string} = await getHashedPassword(email, pw);
+
+                const hashedPassword = pwResult.pw!;
+
+                const loginQuery = (await mysqlManager.execute(userSQL.select(email, hashedPassword)))[0];
+
                 resolve({
                     auth: true,
                     id: loginQuery?.id,
@@ -55,6 +71,30 @@ const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?:
                 });
 
             } else resolve({ auth: false });
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+const getHashedPassword = (email: string, pw: string): Promise<{result: boolean, pw?: string}> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const saltQuery = await mysqlManager.execute(userSQL.selectSaltByEmail(email));
+
+            if(saltQuery.length === 1) {
+
+                const salt: string = saltQuery[0].salt;
+                const hashedPassword: string = userUtility.hash(pw, salt);
+
+                resolve({
+                    result: true,
+                    pw: hashedPassword
+                });
+
+            } else resolve({ result: false });
 
         } catch(error) { reject(error); }
 
@@ -128,15 +168,21 @@ const createUser = (email: string, pw: string, name: string): Promise<number> =>
 
         try {
 
-            // generate random access key
-            const access: string = await userUtility.createRandomAccess();
-
             // check if same email exists
             const emailCheckQuery = await mysqlManager.execute(userSQL.checkEmail(email));
 
             if(emailCheckQuery.length === 0) {
 
-                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, name));
+                // generate random access key
+                const access: string = await userUtility.createRandomAccess();
+
+                // generate salt for hashing
+                const salt = userUtility.createRandomSalt();
+
+                // generate hashed password
+                pw = userUtility.hash(pw, salt);
+
+                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, salt, name));
 
                 if(userAddQuery.affectedRows === 1) resolve(101);
                 else reject('User Add Failed')
