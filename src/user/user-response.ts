@@ -182,7 +182,7 @@ const postImage = async (response: express.Response, user: number, formData: {im
 
     await userDao.addProfileImage(user, formData.image);
 
-    response.json({ 'result': true });
+    response.json({ result: true });
 
 };
 

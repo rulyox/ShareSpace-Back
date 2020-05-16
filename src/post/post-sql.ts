@@ -37,7 +37,8 @@ const selectPostData = (id: number): string =>
     `
     SELECT user.id AS user, user.access AS access, user.name AS name, user.image AS profile, post.text AS text
     FROM post, user
-    WHERE post.user = user.id AND post.id = ${id}
+    WHERE post.id = ${id}
+    AND post.user = user.id
     ;`;
 
 const selectPostImage = (post: number): string =>
