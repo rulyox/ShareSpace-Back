@@ -1,36 +1,50 @@
 const select = (email: string, pw: string): string =>
-    `SELECT *
+    `
+    SELECT id, email, name
     FROM user
-    WHERE email = "${email}" AND pw = "${pw}";`;
+    WHERE email = "${email}" AND pw = "${pw}"
+    ;`;
 
 const selectSaltByEmail = (email: string): string =>
-    `SELECT salt
+    `
+    SELECT salt
     FROM user
-    WHERE email = "${email}";`;
+    WHERE email = "${email}"
+    ;`;
 
 const selectIdByAccess = (access: string): string =>
-    `SELECT id
+    `
+    SELECT id
     FROM user
-    WHERE access = "${access}";`;
+    WHERE access = "${access}"
+    ;`;
 
 const selectByID = (id: number): string =>
-    `SELECT *
+    `
+    SELECT access, email, name, image
     FROM user
-    WHERE id = ${id};`;
+    WHERE id = ${id}
+    ;`;
 
 const checkEmail = (email: string): string =>
-    `SELECT *
+    `
+    SELECT id
     FROM user
-    WHERE email = "${email}";`;
+    WHERE email = "${email}"
+    ;`;
 
 const add = (access: string, email: string, pw: string, salt: string, name: string): string =>
-    `INSERT INTO user
-    VALUES (NULL, "${access}", "${email}", "${pw}", "${salt}", "${name}", NULL);`;
+    `
+    INSERT INTO user
+    VALUES (NULL, "${access}", "${email}", "${pw}", "${salt}", "${name}", NULL)
+    ;`;
 
 const addProfileImage = (id: number, image: string): string =>
-    `UPDATE user
+    `
+    UPDATE user
     SET image = "${image}"
-    WHERE id = ${id}`;
+    WHERE id = ${id}
+    ;`;
 
 export default {
     select,
