@@ -9,9 +9,12 @@ import dataConfig from '../../config/data.json';
 Check login and create token.
 
 Response JSON
-{result: number, message: string, token: string}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{token: string}
+
+Response Code
 101 : OK
 201 : Wrong email
 202 : Wrong password
@@ -28,17 +31,21 @@ const postToken = async (response: express.Response, email: string, pw: string) 
         case 101:
             const token: string = userUtility.createToken(email, pw);
 
-            response.json({
-                result: 101,
-                message: 'OK',
+            const result = {
                 token: token
+            };
+
+            response.json({
+                code: 101,
+                message: 'OK',
+                result: result
             });
 
             break;
 
         case 201:
             response.json({
-                result: 201,
+                code: 201,
                 message: 'Wrong email'
             });
 
@@ -46,11 +53,12 @@ const postToken = async (response: express.Response, email: string, pw: string) 
 
         case 202:
             response.json({
-                result: 202,
+                code: 202,
                 message: 'Wrong password'
             });
 
             break;
+
     }
 
 };
@@ -59,7 +67,13 @@ const postToken = async (response: express.Response, email: string, pw: string) 
 Login using token.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {access: string, email: string, name: string}
+
+Response Code
+101 : OK
 */
 const get = async (response: express.Response, user: number) => {
 
@@ -68,10 +82,16 @@ const get = async (response: express.Response, user: number) => {
 
     const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDao.getUserData(user);
 
+    const result = {
+        access: userDataResult.access,
+        email: userDataResult.email,
+        name: userDataResult.name
+    };
+
     response.json({
-        access: userDataResult.access!,
-        email: userDataResult.email!,
-        name: userDataResult.name!
+        code: 101,
+        message: 'OK',
+        result: result
     });
 
 };
@@ -80,9 +100,9 @@ const get = async (response: express.Response, user: number) => {
 Sign up.
 
 Response JSON
-{result: number, message: string}
+{code: number, message: string}
 
-Result Code
+Response Code
 101 : OK
 201 : Email exists
 */
@@ -91,16 +111,27 @@ const post = async (response: express.Response, email: string, pw: string, name:
     // print log
     utility.print(`POST /user | email: ${email}`);
 
-    const addUserResult: number = await userDao.createUser(email, pw, name);
+    const addUserResultCode: number = await userDao.createUser(email, pw, name);
 
-    let resultMessage: string = '';
-    if(addUserResult === 101) resultMessage = 'OK';
-    else if(addUserResult === 201) resultMessage = 'Email exists';
+    switch(addUserResultCode) {
 
-    response.json({
-        result: addUserResult,
-        message: resultMessage
-    });
+        case 101:
+            response.json({
+                code: 101,
+                message: 'OK'
+            });
+
+            break;
+
+        case 201:
+            response.json({
+                code: 201,
+                message: 'Email exists'
+            });
+
+            break;
+
+    }
 
 };
 
@@ -108,7 +139,14 @@ const post = async (response: express.Response, email: string, pw: string, name:
 Get user data.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {name: string, image: string}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getData = async (response: express.Response, access: string) => {
 
@@ -119,7 +157,10 @@ const getData = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -127,9 +168,15 @@ const getData = async (response: express.Response, access: string) => {
 
     const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDao.getUserData(id);
 
+    const result = {
+        name: userDataResult.name,
+        image: userDataResult.image
+    };
+
     response.json({
-        name: userDataResult.name!,
-        image: userDataResult.image!,
+        code: 101,
+        message: 'OK',
+        result: result
     });
 
 };
@@ -173,7 +220,10 @@ const getImage = async (response: express.Response, access: string) => {
 Add profile image.
 
 Response JSON
-{result: boolean}
+{code: number, message: string}
+
+Response Code
+101 : OK
 */
 const postImage = async (response: express.Response, user: number, formData: {image: object}) => {
 
@@ -182,7 +232,10 @@ const postImage = async (response: express.Response, user: number, formData: {im
 
     await userDao.addProfileImage(user, formData.image);
 
-    response.json({ result: true });
+    response.json({
+        code: 101,
+        message: 'OK'
+    });
 
 };
 

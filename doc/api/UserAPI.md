@@ -15,8 +15,15 @@ Check login and create token.
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "token": "string"
 }
 ```
@@ -40,10 +47,24 @@ token : string
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "access": "string",
   "email": "string",
   "name": "string"
 }
+```
+
+* Result Code
+```
+101 : OK
 ```
 
 ## POST /user
@@ -62,7 +83,7 @@ Sign up.
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string"
 }
 ```
@@ -85,9 +106,24 @@ access : string
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "name": "string",
   "image": "string"
 }
+```
+
+* Result Code
+```
+101 : OK
+201 : User does not exist
 ```
 
 ## GET /user/image/:access
@@ -121,6 +157,12 @@ files
 * Response JSON
 ```json
 {
-  "result": "boolean"
+  "code": "number",
+  "message": "string"
 }
+```
+
+* Result Code
+```
+101 : OK
 ```

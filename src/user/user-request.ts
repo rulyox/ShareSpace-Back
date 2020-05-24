@@ -9,9 +9,12 @@ Request Body JSON
 {email: string, pw: string}
 
 Response JSON
-{result: number, message: string, token: string}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{token: string}
+
+Response Code
 101 : OK
 201 : Wrong email
 202 : Wrong password
@@ -44,7 +47,13 @@ Request Header
 token : string
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {access: string, email: string, name: string}
+
+Response Code
+101 : OK
 */
 const get = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -73,9 +82,9 @@ Request Body JSON
 {email: string, pw: string, name: string}
 
 Response JSON
-{result: number, message: string}
+{code: number, message: string}
 
-Result Code
+Response Code
 101 : OK
 201 : Email exists
 */
@@ -108,7 +117,14 @@ Request Param
 access : string
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {name: string, image: string}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -169,7 +185,10 @@ Request Form
 files
 
 Response JSON
-{result: boolean}
+{code: number, message: string}
+
+Response Code
+101 : OK
 */
 const postImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
