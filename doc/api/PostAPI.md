@@ -18,7 +18,7 @@ files
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string"
 }
 ```
@@ -45,15 +45,20 @@ access : string
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string",
-  "data": {
-    "user": "string",
-    "name": "string",
-    "profile": "string",
-    "text": "string",
-    "image": "string[]"
-  }
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
+  "user": "string",
+  "name": "string",
+  "profile": "string",
+  "text": "string",
+  "image": "string[]"
 }
 ```
 
@@ -80,15 +85,20 @@ access : string
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string",
-  "data": {
-    "user": "string",
-    "name": "string",
-    "profile": "string",
-    "text": "string",
-    "image": "string"
-  }
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
+  "user": "string",
+  "name": "string",
+  "profile": "string",
+  "text": "string",
+  "image": "string"
 }
 ```
 
@@ -116,8 +126,22 @@ count : number
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "post": "string[]"
 }
+```
+
+* Result Code
+```
+101 : OK
 ```
 
 ## GET /post/user/:access
@@ -143,8 +167,15 @@ count : number
 * Response JSON
 ```json
 {
-  "result": "number",
+  "code": "number",
   "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "total": "number",
   "list": "string[]"
 }
@@ -153,6 +184,7 @@ count : number
 * Result Code
 ```
 101 : OK
+201 : User does not exist
 201 : Wrong range
 ```
 

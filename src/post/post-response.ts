@@ -9,9 +9,9 @@ import dataConfig from '../../config/data.json';
 Write new post.
 
 Response JSON
-{result: number, message: string}
+{code: number, message: string}
 
-Result Code
+Response Code
 101 : OK
 */
 const post = async (response: express.Response, user: number, formData: {text: string, images: object[]}) => {
@@ -19,14 +19,11 @@ const post = async (response: express.Response, user: number, formData: {text: s
     // print log
     utility.print(`POST /post | user: ${user} file: ${formData.images.length}`);
 
-    const addPostResult: number = await postDao.writePost(user, formData.text, formData.images);
-
-    let resultMessage: string = '';
-    if(addPostResult === 101) resultMessage = 'OK';
+    await postDao.writePost(user, formData.text, formData.images);
 
     response.json({
-        result: addPostResult,
-        message: resultMessage
+        code: 101,
+        message: 'OK'
     });
 
 };
@@ -35,9 +32,12 @@ const post = async (response: express.Response, user: number, formData: {text: s
 Get post data.
 
 Response JSON
-{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string[]}}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{user: string, name: string, profile: string, text: string, image: string[]}
+
+Response Code
 101 : OK
 201 : Post does not exist
 */
@@ -61,23 +61,25 @@ const getData = async (response: express.Response, user: number, access: string)
     switch(postData.result) {
 
         case 101:
+            const result = {
+                user: postData.user,
+                name: postData.name,
+                profile: postData.profile,
+                text: postData.text,
+                image: postData.image
+            };
+
             response.json({
-                result: 101,
+                code: 101,
                 message: 'OK',
-                data: {
-                    user: postData.user,
-                    name: postData.name,
-                    profile: postData.profile,
-                    text: postData.text,
-                    image: postData.image
-                }
+                result: result
             });
 
             break;
 
         case 201:
             response.json({
-                result: 201,
+                code: 201,
                 message: 'Post does not exist'
             });
 
@@ -91,9 +93,12 @@ const getData = async (response: express.Response, user: number, access: string)
 Get post preview.
 
 Response JSON
-{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string}}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{user: string, name: string, profile: string, text: string, image: string}
+
+Response Code
 101 : OK
 201 : Post does not exist
 */
@@ -121,23 +126,25 @@ const getPreview = async (response: express.Response, user: number, access: stri
     switch(postData.result) {
 
         case 101:
+            const result = {
+                user: postData.user,
+                name: postData.name,
+                profile: postData.profile,
+                text: postData.text,
+                image: previewImage
+            };
+
             response.json({
-                result: 101,
+                code: 101,
                 message: 'OK',
-                data: {
-                    user: postData.user,
-                    name: postData.name,
-                    profile: postData.profile,
-                    text: postData.text,
-                    image: previewImage
-                }
+                result: result
             });
 
             break;
 
         case 201:
             response.json({
-                result: 201,
+                code: 201,
                 message: 'Post does not exist'
             });
 
@@ -151,7 +158,13 @@ const getPreview = async (response: express.Response, user: number, access: stri
 Get feed.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {post: string[]}
+
+Response Code
+101 : OK
 */
 const getFeed = async (response: express.Response, user: number, start: number, count: number) => {
 
@@ -160,7 +173,15 @@ const getFeed = async (response: express.Response, user: number, start: number, 
 
     const feedData: string[] = await postDao.getFeed(user, start, count);
 
-    response.json({ post: feedData });
+    const result = {
+        post: feedData
+    };
+
+    response.json({
+        code: 101,
+        message: 'OK',
+        result: result
+    });
 
 };
 
@@ -168,10 +189,14 @@ const getFeed = async (response: express.Response, user: number, start: number, 
 Get post list by user.
 
 Response JSON
-{result: number, message: string, total: number, list: string[]}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{total: number, list: string[]}
+
+Response Code
 101 : OK
+201 : User does not exist
 201 : Wrong range
 */
 const getUser = async (response: express.Response, user: number, access: string, start: number, count: number) => {
@@ -183,7 +208,10 @@ const getUser = async (response: express.Response, user: number, access: string,
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -198,19 +226,27 @@ const getUser = async (response: express.Response, user: number, access: string,
         // get post list by user
         const postList: string[] = await postDao.getPostByUser(id, start, count);
 
-        response.json({
-            result: 101,
-            message: 'OK',
+        const result = {
             total: postCount,
             list: postList
+        };
+
+        response.json({
+            code: 101,
+            message: 'OK',
+            result: result
         });
 
     } else {
 
-        response.json({
-            result: 201,
-            message: 'Wrong range',
+        const result = {
             total: postCount
+        };
+
+        response.json({
+            code: 202,
+            message: 'Wrong range',
+            result: result
         });
 
     }

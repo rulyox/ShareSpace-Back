@@ -13,9 +13,9 @@ text : string
 files
 
 Response JSON
-{result: number, message: string}
+{code: number, message: string}
 
-Result Code
+Response Code
 101 : OK
 */
 const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
@@ -49,9 +49,12 @@ Request Param
 access : string
 
 Response JSON
-{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string[]}}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{user: string, name: string, profile: string, text: string, image: string[]}
+
+Response Code
 101 : OK
 201 : Post does not exist
 */
@@ -92,9 +95,12 @@ Request Param
 access : string
 
 Response JSON
-{result: number, message: string, data: {user: string, name: string, profile: string, text: string, image: string}}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{user: string, name: string, profile: string, text: string, image: string}
+
+Response Code
 101 : OK
 201 : Post does not exist
 */
@@ -136,7 +142,13 @@ start : number (starts from 0)
 count : number
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {post: string[]}
+
+Response Code
+101 : OK
 */
 const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -180,10 +192,14 @@ start : number (starts from 0)
 count : number
 
 Response JSON
-{result: number, message: string, total: number, list: string[]}
+{code: number, message: string, result: json}
 
-Result Code
+Response JSON Result
+{total: number, list: string[]}
+
+Response Code
 101 : OK
+201 : User does not exist
 201 : Wrong range
 */
 const getUser = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
