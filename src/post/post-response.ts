@@ -17,7 +17,7 @@ Result Code
 const post = async (response: express.Response, user: number, formData: {text: string, images: object[]}) => {
 
     // print log
-    utility.print(`POST /post user: ${user} file: ${formData.images.length}`);
+    utility.print(`POST /post | user: ${user} file: ${formData.images.length}`);
 
     const addPostResult: number = await postDao.writePost(user, formData.text, formData.images);
 
@@ -44,7 +44,7 @@ Result Code
 const getData = async (response: express.Response, user: number, access: string) => {
 
     // print log
-    utility.print(`GET /post/data user: ${user} access: ${access}`);
+    utility.print(`GET /post/data | user: ${user} access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
@@ -100,7 +100,7 @@ Result Code
 const getPreview = async (response: express.Response, user: number, access: string) => {
 
     // print log
-    utility.print(`GET /post/preview user: ${user} access: ${access}`);
+    utility.print(`GET /post/preview | user: ${user} access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
@@ -156,7 +156,7 @@ Response JSON
 const getFeed = async (response: express.Response, user: number, start: number, count: number) => {
 
     // print log
-    utility.print(`GET /post/feed user: ${user}`);
+    utility.print(`GET /post/feed | user: ${user}`);
 
     const feedData: string[] = await postDao.getFeed(user, start, count);
 
@@ -177,7 +177,7 @@ Result Code
 const getUser = async (response: express.Response, user: number, access: string, start: number, count: number) => {
 
     // print log
-    utility.print(`GET /post/user user: ${user} start: ${start} count: ${count}`);
+    utility.print(`GET /post/user | user: ${user} start: ${start} count: ${count}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
@@ -226,7 +226,7 @@ image file
 const getImage = async (response: express.Response, user: number, access: string, image: string) => {
 
     // print log
-    utility.print(`GET /post/image user: ${user} access: ${access} image: ${image}`);
+    utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
 
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 

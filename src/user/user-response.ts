@@ -19,7 +19,7 @@ Result Code
 const postToken = async (response: express.Response, email: string, pw: string) => {
 
     // print log
-    utility.print(`POST /user/token ${email}`);
+    utility.print(`POST /user/token | email: ${email}`);
 
     const loginResultCode: number = await userDao.checkLogin(email, pw);
 
@@ -64,7 +64,7 @@ Response JSON
 const get = async (response: express.Response, user: number) => {
 
     // print log
-    utility.print(`GET /user user: ${user}`);
+    utility.print(`GET /user | user: ${user}`);
 
     const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDao.getUserData(user);
 
@@ -89,7 +89,7 @@ Result Code
 const post = async (response: express.Response, email: string, pw: string, name: string) => {
 
     // print log
-    utility.print(`POST /user ${email}`);
+    utility.print(`POST /user | email: ${email}`);
 
     const addUserResult: number = await userDao.createUser(email, pw, name);
 
@@ -113,7 +113,7 @@ Response JSON
 const getData = async (response: express.Response, access: string) => {
 
     // print log
-    utility.print(`GET /user/data ${access}`);
+    utility.print(`GET /user/data | access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
@@ -143,7 +143,7 @@ image file
 const getImage = async (response: express.Response, access: string) => {
 
     // print log
-    utility.print(`GET /user/image ${access}`);
+    utility.print(`GET /user/image | access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
@@ -178,7 +178,7 @@ Response JSON
 const postImage = async (response: express.Response, user: number, formData: {image: object}) => {
 
     // print log
-    utility.print(`POST /user/image user: ${user}`);
+    utility.print(`POST /user/image | user: ${user}`);
 
     await userDao.addProfileImage(user, formData.image);
 

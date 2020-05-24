@@ -12,7 +12,7 @@ Response JSON
 const getFollowing = async (response: express.Response, access: string) => {
 
     // print log
-    utility.print(`GET /user/follow/ing access: ${access}`);
+    utility.print(`GET /user/follow/ing | access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
@@ -39,7 +39,7 @@ Response JSON
 const getFollower = async (response: express.Response, access: string) => {
 
     // print log
-    utility.print(`GET /user/follow/er access: ${access}`);
+    utility.print(`GET /user/follow/er | access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
@@ -66,7 +66,7 @@ Response JSON
 const getCheck = async (response: express.Response, follower: string, following: string) => {
 
     // print log
-    utility.print(`GET /check follower: ${follower} following: ${following}`);
+    utility.print(`GET /check | follower: ${follower} following: ${following}`);
 
     const followerAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(follower);
     const followingAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(following);
@@ -95,7 +95,7 @@ Response JSON
 const post = async (response: express.Response, user: number, access: string, type: boolean) => {
 
     // print log
-    utility.print(`POST /user/follow user: ${user} access: ${access}`);
+    utility.print(`POST /user/follow | user: ${user} access: ${access}`);
 
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
