@@ -28,7 +28,7 @@ Check login and create token.
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : Wrong email
@@ -62,7 +62,7 @@ token : string
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 ```
@@ -88,7 +88,7 @@ Sign up.
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : Email exists
@@ -120,7 +120,7 @@ access : string
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : User does not exist
@@ -162,7 +162,7 @@ files
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 ```

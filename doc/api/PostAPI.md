@@ -23,7 +23,7 @@ files
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 ```
@@ -62,7 +62,7 @@ access : string
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : Post does not exist
@@ -102,7 +102,7 @@ access : string
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : Post does not exist
@@ -139,7 +139,7 @@ count : number
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 ```
@@ -181,7 +181,7 @@ count : number
 }
 ```
 
-* Result Code
+* Response Code
 ```
 101 : OK
 201 : User does not exist

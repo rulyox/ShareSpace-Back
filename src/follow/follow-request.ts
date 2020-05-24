@@ -8,7 +8,14 @@ Request Param
 access : string
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {user: string[]}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getFollowing = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -37,7 +44,14 @@ Request Param
 access : string
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {user: string[]}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getFollower = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -67,7 +81,14 @@ follower : string
 following : string
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {following: boolean}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getCheck = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -100,7 +121,11 @@ Request Body JSON
 {type: boolean, access: string}
 
 Response JSON
-{result: boolean}
+{code: number, message: string}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 

@@ -12,8 +12,23 @@ access : string
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "user": "string[]"
 }
+```
+
+* Response Code
+```
+101 : OK
+201 : User does not exist
 ```
 
 ## GET /follow/er/:access
@@ -28,8 +43,23 @@ access : string
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "user": "string[]"
 }
+```
+
+* Response Code
+```
+101 : OK
+201 : User does not exist
 ```
 
 ## GET /follow/check/:follower/:following
@@ -45,8 +75,23 @@ following : string
 * Response JSON
 ```json
 {
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
   "following": "boolean"
 }
+```
+
+* Response Code
+```
+101 : OK
+201 : User does not exist
 ```
 
 ## POST /follow
@@ -69,6 +114,13 @@ token : string
 * Response JSON
 ```json
 {
-  "result": "boolean"
+  "code": "number",
+  "message": "string"
 }
+```
+
+* Response Code
+```
+101 : OK
+201 : User does not exist
 ```

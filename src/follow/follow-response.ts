@@ -7,7 +7,14 @@ import utility from '../utility';
 Get user's following list.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {user: string[]}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getFollowing = async (response: express.Response, access: string) => {
 
@@ -18,7 +25,10 @@ const getFollowing = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -26,7 +36,15 @@ const getFollowing = async (response: express.Response, access: string) => {
 
     const followingResult: string[] = await followDao.getFollowingList(id);
 
-    response.json({ user: followingResult });
+    const result = {
+        user: followingResult
+    };
+
+    response.json({
+        code: 101,
+        message: 'OK',
+        result: result
+    });
 
 };
 
@@ -34,7 +52,14 @@ const getFollowing = async (response: express.Response, access: string) => {
 Get user's follower list.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {user: string[]}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getFollower = async (response: express.Response, access: string) => {
 
@@ -45,7 +70,10 @@ const getFollower = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -53,7 +81,15 @@ const getFollower = async (response: express.Response, access: string) => {
 
     const followerResult: string[] = await followDao.getFollowerList(id);
 
-    response.json({ user: followerResult });
+    const result = {
+        user: followerResult
+    };
+
+    response.json({
+        code: 101,
+        message: 'OK',
+        result: result
+    });
 
 };
 
@@ -61,7 +97,14 @@ const getFollower = async (response: express.Response, access: string) => {
 Check if following.
 
 Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
 {following: boolean}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const getCheck = async (response: express.Response, follower: string, following: string) => {
 
@@ -73,7 +116,10 @@ const getCheck = async (response: express.Response, follower: string, following:
 
     // user exist check
     if(!followerAccessResult.result || followerAccessResult.id === undefined || !followingAccessResult.result || followingAccessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -82,7 +128,15 @@ const getCheck = async (response: express.Response, follower: string, following:
 
     const checkResult: boolean = await followDao.checkFollowing(followerId, followingId);
 
-    response.json({ following: checkResult });
+    const result = {
+        following: checkResult
+    };
+
+    response.json({
+        code: 101,
+        message: 'OK',
+        result: result
+    });
 
 };
 
@@ -90,7 +144,11 @@ const getCheck = async (response: express.Response, follower: string, following:
 Follow other user.
 
 Response JSON
-{result: boolean}
+{code: number, message: string}
+
+Response Code
+101 : OK
+201 : User does not exist
 */
 const post = async (response: express.Response, user: number, access: string, type: boolean) => {
 
@@ -101,7 +159,10 @@ const post = async (response: express.Response, user: number, access: string, ty
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
+        response.json({
+            code: 201,
+            message: 'User does not exist'
+        });
         return;
     }
 
@@ -110,7 +171,10 @@ const post = async (response: express.Response, user: number, access: string, ty
     if(type) await followDao.follow(user, id);
     else await followDao.unFollow(user, id);
 
-    response.json({ result: true });
+    response.json({
+        code: 101,
+        message: 'OK'
+    });
 
 };
 
