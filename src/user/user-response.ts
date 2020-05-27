@@ -35,27 +35,17 @@ const postToken = async (response: express.Response, email: string, pw: string) 
                 token: token
             };
 
-            response.json({
-                code: 101,
-                message: 'OK',
-                result: result
-            });
+            utility.sendResponse(response, 101, 'OK', result);
 
             break;
 
         case 201:
-            response.json({
-                code: 201,
-                message: 'Wrong email'
-            });
+            utility.sendResponse(response, 201, 'Wrong email', undefined);
 
             break;
 
         case 202:
-            response.json({
-                code: 202,
-                message: 'Wrong password'
-            });
+            utility.sendResponse(response, 202, 'Wrong password', undefined);
 
             break;
 
@@ -88,11 +78,7 @@ const get = async (response: express.Response, user: number) => {
         name: userDataResult.name
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -116,18 +102,12 @@ const post = async (response: express.Response, email: string, pw: string, name:
     switch(addUserResultCode) {
 
         case 101:
-            response.json({
-                code: 101,
-                message: 'OK'
-            });
+            utility.sendResponse(response, 101, 'OK', undefined);
 
             break;
 
         case 201:
-            response.json({
-                code: 201,
-                message: 'Email exists'
-            });
+            utility.sendResponse(response, 201, 'Email exists', undefined);
 
             break;
 
@@ -157,10 +137,7 @@ const getData = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -173,11 +150,7 @@ const getData = async (response: express.Response, access: string) => {
         image: userDataResult.image
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -232,10 +205,7 @@ const postImage = async (response: express.Response, user: number, formData: {im
 
     await userDao.addProfileImage(user, formData.image);
 
-    response.json({
-        code: 101,
-        message: 'OK'
-    });
+    utility.sendResponse(response, 101, 'OK', undefined);
 
 };
 

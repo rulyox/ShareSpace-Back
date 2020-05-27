@@ -25,10 +25,7 @@ const getFollowing = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -40,11 +37,7 @@ const getFollowing = async (response: express.Response, access: string) => {
         user: followingResult
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -70,10 +63,7 @@ const getFollower = async (response: express.Response, access: string) => {
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -85,11 +75,7 @@ const getFollower = async (response: express.Response, access: string) => {
         user: followerResult
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -116,10 +102,7 @@ const getCheck = async (response: express.Response, follower: string, following:
 
     // user exist check
     if(!followerAccessResult.result || followerAccessResult.id === undefined || !followingAccessResult.result || followingAccessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -132,11 +115,7 @@ const getCheck = async (response: express.Response, follower: string, following:
         following: checkResult
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -159,10 +138,7 @@ const post = async (response: express.Response, user: number, access: string, ty
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -171,10 +147,7 @@ const post = async (response: express.Response, user: number, access: string, ty
     if(type) await followDao.follow(user, id);
     else await followDao.unFollow(user, id);
 
-    response.json({
-        code: 101,
-        message: 'OK'
-    });
+    utility.sendResponse(response, 101, 'OK', undefined);
 
 };
 

@@ -21,10 +21,7 @@ const post = async (response: express.Response, user: number, formData: {text: s
 
     await postDao.writePost(user, formData.text, formData.images);
 
-    response.json({
-        code: 101,
-        message: 'OK'
-    });
+    utility.sendResponse(response, 101, 'OK', undefined);
 
 };
 
@@ -69,19 +66,12 @@ const getData = async (response: express.Response, user: number, access: string)
                 image: postData.image
             };
 
-            response.json({
-                code: 101,
-                message: 'OK',
-                result: result
-            });
+            utility.sendResponse(response, 101, 'OK', result);
 
             break;
 
         case 201:
-            response.json({
-                code: 201,
-                message: 'Post does not exist'
-            });
+            utility.sendResponse(response, 201, 'Post does not exist', undefined);
 
             break;
 
@@ -134,19 +124,12 @@ const getPreview = async (response: express.Response, user: number, access: stri
                 image: previewImage
             };
 
-            response.json({
-                code: 101,
-                message: 'OK',
-                result: result
-            });
+            utility.sendResponse(response, 101, 'OK', result);
 
             break;
 
         case 201:
-            response.json({
-                code: 201,
-                message: 'Post does not exist'
-            });
+            utility.sendResponse(response, 201, 'Post does not exist', undefined);
 
             break;
 
@@ -177,11 +160,7 @@ const getFeed = async (response: express.Response, user: number, start: number, 
         post: feedData
     };
 
-    response.json({
-        code: 101,
-        message: 'OK',
-        result: result
-    });
+    utility.sendResponse(response, 101, 'OK', result);
 
 };
 
@@ -208,10 +187,7 @@ const getUser = async (response: express.Response, user: number, access: string,
 
     // user exist check
     if(!accessResult.result || accessResult.id === undefined) {
-        response.json({
-            code: 201,
-            message: 'User does not exist'
-        });
+        utility.sendResponse(response, 201, 'User does not exist', undefined);
         return;
     }
 
@@ -231,11 +207,7 @@ const getUser = async (response: express.Response, user: number, access: string,
             list: postList
         };
 
-        response.json({
-            code: 101,
-            message: 'OK',
-            result: result
-        });
+        utility.sendResponse(response, 101, 'OK', result);
 
     } else {
 
@@ -243,11 +215,7 @@ const getUser = async (response: express.Response, user: number, access: string,
             total: postCount
         };
 
-        response.json({
-            code: 202,
-            message: 'Wrong range',
-            result: result
-        });
+        utility.sendResponse(response, 202, 'Wrong range', result);
 
     }
 
