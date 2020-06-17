@@ -1,6 +1,6 @@
 # Share Space Back-end Server
 
-<div align="center"> <img src="./doc/logo.png" width=600px height=200px> </div>
+![logo](./doc/logo.png)
 
 Back-end server for the Share Space project.
 
@@ -18,3 +18,7 @@ Back-end server for the Share Space project.
 ## Configuration
 
 [Config Document](doc/Config.md)
+
+## Structure
+
+![structure](./doc/structure.png)
