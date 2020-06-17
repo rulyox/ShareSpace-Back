@@ -34,7 +34,7 @@ const postToken = async (request: express.Request, response: express.Response, n
         }
 
         // response
-        const result = await userService.postToken(email, pw);
+        const result: APIResult = await userService.postToken(email, pw);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -70,7 +70,7 @@ const get = async (request: express.Request, response: express.Response, next: e
         }
 
         // response
-        const result = await userService.get(user);
+        const result: APIResult = await userService.get(user);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -106,7 +106,7 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        const result = await userService.post(email, pw, name);
+        const result: APIResult = await userService.post(email, pw, name);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -143,7 +143,7 @@ const getData = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        const result = await userService.getData(access);
+        const result: APIResult = await userService.getData(access);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -178,7 +178,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        const result = await userService.getImage(access);
+        const result: APIResult = await userService.getImage(access);
         if(result.code === 101) response.sendFile(result.result);
         else response.json(result);
 
@@ -216,7 +216,7 @@ const postImage = async (request: express.Request, response: express.Response, n
         }
 
         // response
-        const result = await userService.postImage(user, formData);
+        const result: APIResult = await userService.postImage(user, formData);
         response.json(result);
 
     } catch(error) { next(error); }

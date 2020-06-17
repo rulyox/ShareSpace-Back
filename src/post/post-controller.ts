@@ -33,7 +33,7 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        const result = await postService.post(user, formData);
+        const result: APIResult = await postService.post(user, formData);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -80,7 +80,7 @@ const getData = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        const result = await postService.getData(user, access);
+        const result: APIResult = await postService.getData(user, access);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -127,7 +127,7 @@ const getPreview = async (request: express.Request, response: express.Response, 
         }
 
         // response
-        const result = await postService.getPreview(user, access);
+        const result: APIResult = await postService.getPreview(user, access);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -175,7 +175,7 @@ const getFeed = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        const result = await postService.getFeed(user, start, count);
+        const result: APIResult = await postService.getFeed(user, start, count);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -229,7 +229,7 @@ const getUser = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        const result = await postService.getUser(user, access, start, count);
+        const result: APIResult = await postService.getUser(user, access, start, count);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -276,7 +276,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        const result = await postService.getImage(user, access, image);
+        const result: APIResult = await postService.getImage(user, access, image);
         if(result.code === 101) response.sendFile(result.result);
         else response.json(result);
 

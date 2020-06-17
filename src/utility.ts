@@ -44,7 +44,7 @@ const saveImage = (sourceImg: string, targetImg: string): Promise<any> => {
     });
 };
 
-const result = (code: number, message: string, result: any) => {
+const result = (code: number, message: string, result: any): APIResult => {
 
     return {
         code: code,

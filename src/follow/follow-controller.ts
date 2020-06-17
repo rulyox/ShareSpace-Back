@@ -31,7 +31,7 @@ const getFollowing = async (request: express.Request, response: express.Response
         }
 
         // response
-        const result = await followService.getFollowing(access);
+        const result: APIResult = await followService.getFollowing(access);
         response.json(result);
 
 
@@ -69,7 +69,7 @@ const getFollower = async (request: express.Request, response: express.Response,
         }
 
         // response
-        const result = await followService.getFollower(access);
+        const result: APIResult = await followService.getFollower(access);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -108,7 +108,7 @@ const getCheck = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        const result = await followService.getCheck(follower, following);
+        const result: APIResult = await followService.getCheck(follower, following);
         response.json(result);
 
     } catch(error) { next(error); }
@@ -153,7 +153,7 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        const result = await followService.post(user, access, type);
+        const result: APIResult = await followService.post(user, access, type);
         response.json(result);
 
     } catch(error) { next(error); }
