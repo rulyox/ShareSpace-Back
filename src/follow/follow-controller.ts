@@ -1,5 +1,5 @@
 import express from 'express';
-import followResponse from './follow-response';
+import followService from './follow-service';
 
 /*
 Get user's following list.
@@ -31,7 +31,9 @@ const getFollowing = async (request: express.Request, response: express.Response
         }
 
         // response
-        await followResponse.getFollowing(response, access);
+        const result = await followService.getFollowing(access);
+        response.json(result);
+
 
     } catch(error) { next(error); }
 
@@ -67,7 +69,8 @@ const getFollower = async (request: express.Request, response: express.Response,
         }
 
         // response
-        await followResponse.getFollower(response, access);
+        const result = await followService.getFollower(access);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -105,7 +108,8 @@ const getCheck = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        await followResponse.getCheck(response, follower, following);
+        const result = await followService.getCheck(follower, following);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -149,7 +153,8 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        await followResponse.post(response, user, access, type);
+        const result = await followService.post(user, access, type);
+        response.json(result);
 
     } catch(error) { next(error); }
 

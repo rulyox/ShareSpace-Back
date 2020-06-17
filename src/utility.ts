@@ -1,4 +1,3 @@
-import express from 'express';
 import sharp from 'sharp';
 
 const getTime = (): string => {
@@ -45,19 +44,19 @@ const saveImage = (sourceImg: string, targetImg: string): Promise<any> => {
     });
 };
 
-const sendResponse = (response: express.Response, code: number, message: string, result: any) => {
+const result = (code: number, message: string, result: any) => {
 
-    response.json({
+    return {
         code: code,
         message: message,
         result: result
-    });
+    };
 
-};
+}
 
 export default {
     getTime,
     print,
     saveImage,
-    sendResponse
+    result
 };

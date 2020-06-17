@@ -1,13 +1,9 @@
-import express from 'express';
 import followDao from './follow-dao';
 import userDao from '../user/user-dao';
 import utility from '../utility';
 
 /*
 Get user's following list.
-
-Response JSON
-{code: number, message: string, result: json}
 
 Response JSON Result
 {user: string[]}
@@ -16,7 +12,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollowing = async (response: express.Response, access: string) => {
+const getFollowing = async (access: string) => {
 
     // print log
     utility.print(`GET /user/follow/ing | access: ${access}`);
@@ -24,10 +20,7 @@ const getFollowing = async (response: express.Response, access: string) => {
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -37,15 +30,12 @@ const getFollowing = async (response: express.Response, access: string) => {
         user: followingResult
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
 /*
 Get user's follower list.
-
-Response JSON
-{code: number, message: string, result: json}
 
 Response JSON Result
 {user: string[]}
@@ -54,7 +44,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollower = async (response: express.Response, access: string) => {
+const getFollower = async (access: string) => {
 
     // print log
     utility.print(`GET /user/follow/er | access: ${access}`);
@@ -62,10 +52,7 @@ const getFollower = async (response: express.Response, access: string) => {
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -75,15 +62,12 @@ const getFollower = async (response: express.Response, access: string) => {
         user: followerResult
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
 /*
 Check if following.
-
-Response JSON
-{code: number, message: string, result: json}
 
 Response JSON Result
 {following: boolean}
@@ -92,7 +76,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getCheck = async (response: express.Response, follower: string, following: string) => {
+const getCheck = async (follower: string, following: string) => {
 
     // print log
     utility.print(`GET /check | follower: ${follower} following: ${following}`);
@@ -101,10 +85,7 @@ const getCheck = async (response: express.Response, follower: string, following:
     const followingAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(following);
 
     // user exist check
-    if(!followerAccessResult.result || followerAccessResult.id === undefined || !followingAccessResult.result || followingAccessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!followerAccessResult.result || followerAccessResult.id === undefined || !followingAccessResult.result || followingAccessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const followerId = followerAccessResult.id;
     const followingId = followingAccessResult.id;
@@ -115,21 +96,18 @@ const getCheck = async (response: express.Response, follower: string, following:
         following: checkResult
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
 /*
 Follow other user.
 
-Response JSON
-{code: number, message: string}
-
 Response Code
 101 : OK
 201 : User does not exist
 */
-const post = async (response: express.Response, user: number, access: string, type: boolean) => {
+const post = async (user: number, access: string, type: boolean) => {
 
     // print log
     utility.print(`POST /user/follow | user: ${user} access: ${access}`);
@@ -137,17 +115,14 @@ const post = async (response: express.Response, user: number, access: string, ty
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
     if(type) await followDao.follow(user, id);
     else await followDao.unFollow(user, id);
 
-    utility.sendResponse(response, 101, 'OK', undefined);
+    return utility.result(101, 'OK', undefined);
 
 };
 

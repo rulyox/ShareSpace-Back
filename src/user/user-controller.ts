@@ -1,5 +1,5 @@
 import express from 'express';
-import userResponse from './user-response';
+import userService from './user-service';
 import userUtility from './user-utility';
 
 /*
@@ -34,7 +34,8 @@ const postToken = async (request: express.Request, response: express.Response, n
         }
 
         // response
-        await userResponse.postToken(response, email, pw);
+        const result = await userService.postToken(email, pw);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -69,7 +70,8 @@ const get = async (request: express.Request, response: express.Response, next: e
         }
 
         // response
-        await userResponse.get(response, user);
+        const result = await userService.get(user);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -104,7 +106,8 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        await userResponse.post(response, email, pw, name);
+        const result = await userService.post(email, pw, name);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -140,7 +143,8 @@ const getData = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        await userResponse.getData(response, access);
+        const result = await userService.getData(access);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -154,6 +158,11 @@ access : string
 
 Response
 image file
+
+Response Code
+101 : OK
+201 : User does not exist
+202 : No profile image
 */
 const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -169,7 +178,9 @@ const getImage = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        await userResponse.getImage(response, access);
+        const result = await userService.getImage(access);
+        if(result.code === 101) response.sendFile(result.result);
+        else response.json(result);
 
     } catch(error) { next(error); }
 
@@ -205,7 +216,8 @@ const postImage = async (request: express.Request, response: express.Response, n
         }
 
         // response
-        await userResponse.postImage(response, user, formData);
+        const result = await userService.postImage(user, formData);
+        response.json(result);
 
     } catch(error) { next(error); }
 

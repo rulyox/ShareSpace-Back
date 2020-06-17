@@ -1,4 +1,3 @@
-import express from 'express';
 import path from 'path';
 import postDao from './post-dao';
 import userDao from '../user/user-dao';
@@ -8,28 +7,22 @@ import dataConfig from '../../config/data.json';
 /*
 Write new post.
 
-Response JSON
-{code: number, message: string}
-
 Response Code
 101 : OK
 */
-const post = async (response: express.Response, user: number, formData: {text: string, images: object[]}) => {
+const post = async (user: number, formData: {text: string, images: object[]}) => {
 
     // print log
     utility.print(`POST /post | user: ${user} file: ${formData.images.length}`);
 
     await postDao.writePost(user, formData.text, formData.images);
 
-    utility.sendResponse(response, 101, 'OK', undefined);
+    return utility.result(101, 'OK', undefined);
 
 };
 
 /*
 Get post data.
-
-Response JSON
-{code: number, message: string, result: json}
 
 Response JSON Result
 {user: string, name: string, profile: string, text: string, image: string[]}
@@ -38,7 +31,7 @@ Response Code
 101 : OK
 201 : Post does not exist
 */
-const getData = async (response: express.Response, user: number, access: string) => {
+const getData = async (user: number, access: string) => {
 
     // print log
     utility.print(`GET /post/data | user: ${user} access: ${access}`);
@@ -46,10 +39,7 @@ const getData = async (response: express.Response, user: number, access: string)
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
     // post exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'Post does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -66,14 +56,10 @@ const getData = async (response: express.Response, user: number, access: string)
                 image: postData.image
             };
 
-            utility.sendResponse(response, 101, 'OK', result);
-
-            break;
+            return utility.result(101, 'OK', result);
 
         case 201:
-            utility.sendResponse(response, 201, 'Post does not exist', undefined);
-
-            break;
+            return utility.result(201, 'Post does not exist', undefined);
 
     }
 
@@ -82,9 +68,6 @@ const getData = async (response: express.Response, user: number, access: string)
 /*
 Get post preview.
 
-Response JSON
-{code: number, message: string, result: json}
-
 Response JSON Result
 {user: string, name: string, profile: string, text: string, image: string}
 
@@ -92,7 +75,7 @@ Response Code
 101 : OK
 201 : Post does not exist
 */
-const getPreview = async (response: express.Response, user: number, access: string) => {
+const getPreview = async (user: number, access: string) => {
 
     // print log
     utility.print(`GET /post/preview | user: ${user} access: ${access}`);
@@ -100,10 +83,7 @@ const getPreview = async (response: express.Response, user: number, access: stri
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
     // post exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'Post does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -124,14 +104,10 @@ const getPreview = async (response: express.Response, user: number, access: stri
                 image: previewImage
             };
 
-            utility.sendResponse(response, 101, 'OK', result);
-
-            break;
+            return utility.result(101, 'OK', result);
 
         case 201:
-            utility.sendResponse(response, 201, 'Post does not exist', undefined);
-
-            break;
+            return utility.result(201, 'Post does not exist', undefined);
 
     }
 
@@ -140,16 +116,13 @@ const getPreview = async (response: express.Response, user: number, access: stri
 /*
 Get feed.
 
-Response JSON
-{code: number, message: string, result: json}
-
 Response JSON Result
 {post: string[]}
 
 Response Code
 101 : OK
 */
-const getFeed = async (response: express.Response, user: number, start: number, count: number) => {
+const getFeed = async (user: number, start: number, count: number) => {
 
     // print log
     utility.print(`GET /post/feed | user: ${user}`);
@@ -160,15 +133,12 @@ const getFeed = async (response: express.Response, user: number, start: number, 
         post: feedData
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
 /*
 Get post list by user.
-
-Response JSON
-{code: number, message: string, result: json}
 
 Response JSON Result
 {total: number, list: string[]}
@@ -178,7 +148,7 @@ Response Code
 201 : User does not exist
 201 : Wrong range
 */
-const getUser = async (response: express.Response, user: number, access: string, start: number, count: number) => {
+const getUser = async (user: number, access: string, start: number, count: number) => {
 
     // print log
     utility.print(`GET /post/user | user: ${user} start: ${start} count: ${count}`);
@@ -186,10 +156,7 @@ const getUser = async (response: express.Response, user: number, access: string,
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -207,7 +174,7 @@ const getUser = async (response: express.Response, user: number, access: string,
             list: postList
         };
 
-        utility.sendResponse(response, 101, 'OK', result);
+        return utility.result(101, 'OK', result);
 
     } else {
 
@@ -215,7 +182,7 @@ const getUser = async (response: express.Response, user: number, access: string,
             total: postCount
         };
 
-        utility.sendResponse(response, 202, 'Wrong range', result);
+        return utility.result(202, 'Wrong range', result);
 
     }
 
@@ -226,8 +193,13 @@ Get image file.
 
 Response
 image file
+
+Response Code
+101 : OK
+201 : Post does not exist
+202 : Image does not exist
 */
-const getImage = async (response: express.Response, user: number, access: string, image: string) => {
+const getImage = async (user: number, access: string, image: string) => {
 
     // print log
     utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
@@ -235,17 +207,14 @@ const getImage = async (response: express.Response, user: number, access: string
     const accessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
 
     // post exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'Post does not exist', undefined);
 
     const id = accessResult.id;
 
     const imageResult: boolean = await postDao.checkImage(id, image);
 
-    if(imageResult) response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image));
-    else response.status(404).end();
+    if(imageResult) return utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image));
+    else return utility.result(202, 'Image does not exist', undefined);
 
 };
 

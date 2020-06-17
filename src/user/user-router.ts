@@ -1,24 +1,24 @@
 import express from 'express';
-import userRequest from './user-request';
+import userController from './user-controller';
 
 const router = express.Router();
 
 // Check login and create token.
-router.post('/token', userRequest.postToken);
+router.post('/token', userController.postToken);
 
 // Login using token.
-router.get('/', userRequest.get);
+router.get('/', userController.get);
 
 // Sign up.
-router.post('/', userRequest.post);
+router.post('/', userController.post);
 
 // Get user data.
-router.get('/data/:access', userRequest.getData);
+router.get('/data/:access', userController.getData);
 
 // Get profile image.
-router.get('/image/:access', userRequest.getImage);
+router.get('/image/:access', userController.getImage);
 
 // Add profile image.
-router.post('/image', userRequest.postImage);
+router.post('/image', userController.postImage);
 
 export default router;

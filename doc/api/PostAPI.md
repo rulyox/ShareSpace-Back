@@ -207,3 +207,10 @@ Response
 ```
 image file
 ```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+202 : Image does not exist
+```

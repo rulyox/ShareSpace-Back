@@ -1,5 +1,5 @@
 import express from 'express';
-import postResponse from './post-response';
+import postService from './post-service';
 import postUtility from './post-utility';
 
 /*
@@ -33,7 +33,8 @@ const post = async (request: express.Request, response: express.Response, next: 
         }
 
         // response
-        await postResponse.post(response, user, formData);
+        const result = await postService.post(user, formData);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -79,7 +80,8 @@ const getData = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        await postResponse.getData(response, user, access);
+        const result = await postService.getData(user, access);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -125,7 +127,8 @@ const getPreview = async (request: express.Request, response: express.Response, 
         }
 
         // response
-        await postResponse.getPreview(response, user, access);
+        const result = await postService.getPreview(user, access);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -172,7 +175,8 @@ const getFeed = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        await postResponse.getFeed(response, user, start, count);
+        const result = await postService.getFeed(user, start, count);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -225,7 +229,8 @@ const getUser = async (request: express.Request, response: express.Response, nex
         }
 
         // response
-        await postResponse.getUser(response, user, access, start, count);
+        const result = await postService.getUser(user, access, start, count);
+        response.json(result);
 
     } catch(error) { next(error); }
 
@@ -243,6 +248,11 @@ image: string
 
 Response
 image file
+
+Response Code
+101 : OK
+201 : Post does not exist
+202 : Image does not exist
 */
 const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -266,7 +276,9 @@ const getImage = async (request: express.Request, response: express.Response, ne
         }
 
         // response
-        await postResponse.getImage(response, user, access, image);
+        const result = await postService.getImage(user, access, image);
+        if(result.code === 101) response.sendFile(result.result);
+        else response.json(result);
 
     } catch(error) { next(error); }
 

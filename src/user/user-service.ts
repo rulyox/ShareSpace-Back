@@ -1,4 +1,3 @@
-import express from 'express';
 import path from 'path';
 import userDao from './user-dao';
 import userUtility from './user-utility';
@@ -8,9 +7,6 @@ import dataConfig from '../../config/data.json';
 /*
 Check login and create token.
 
-Response JSON
-{code: number, message: string, result: json}
-
 Response JSON Result
 {token: string}
 
@@ -19,7 +15,7 @@ Response Code
 201 : Wrong email
 202 : Wrong password
 */
-const postToken = async (response: express.Response, email: string, pw: string) => {
+const postToken = async (email: string, pw: string) => {
 
     // print log
     utility.print(`POST /user/token | email: ${email}`);
@@ -35,19 +31,13 @@ const postToken = async (response: express.Response, email: string, pw: string) 
                 token: token
             };
 
-            utility.sendResponse(response, 101, 'OK', result);
-
-            break;
+            return utility.result(101, 'OK', result);
 
         case 201:
-            utility.sendResponse(response, 201, 'Wrong email', undefined);
-
-            break;
+            return utility.result(201, 'Wrong email', undefined);
 
         case 202:
-            utility.sendResponse(response, 202, 'Wrong password', undefined);
-
-            break;
+            return utility.result(202, 'Wrong password', undefined);
 
     }
 
@@ -56,16 +46,13 @@ const postToken = async (response: express.Response, email: string, pw: string) 
 /*
 Login using token.
 
-Response JSON
-{code: number, message: string, result: json}
-
 Response JSON Result
 {access: string, email: string, name: string}
 
 Response Code
 101 : OK
 */
-const get = async (response: express.Response, user: number) => {
+const get = async (user: number) => {
 
     // print log
     utility.print(`GET /user | user: ${user}`);
@@ -78,21 +65,18 @@ const get = async (response: express.Response, user: number) => {
         name: userDataResult.name
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
 /*
 Sign up.
 
-Response JSON
-{code: number, message: string}
-
 Response Code
 101 : OK
 201 : Email exists
 */
-const post = async (response: express.Response, email: string, pw: string, name: string) => {
+const post = async (email: string, pw: string, name: string) => {
 
     // print log
     utility.print(`POST /user | email: ${email}`);
@@ -102,14 +86,10 @@ const post = async (response: express.Response, email: string, pw: string, name:
     switch(addUserResultCode) {
 
         case 101:
-            utility.sendResponse(response, 101, 'OK', undefined);
-
-            break;
+            return utility.result(101, 'OK', undefined);
 
         case 201:
-            utility.sendResponse(response, 201, 'Email exists', undefined);
-
-            break;
+            return utility.result(101, 'Email exists', undefined);
 
     }
 
@@ -118,9 +98,6 @@ const post = async (response: express.Response, email: string, pw: string, name:
 /*
 Get user data.
 
-Response JSON
-{code: number, message: string, result: json}
-
 Response JSON Result
 {name: string, image: string}
 
@@ -128,7 +105,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getData = async (response: express.Response, access: string) => {
+const getData = async (access: string) => {
 
     // print log
     utility.print(`GET /user/data | access: ${access}`);
@@ -136,10 +113,7 @@ const getData = async (response: express.Response, access: string) => {
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        utility.sendResponse(response, 201, 'User does not exist', undefined);
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -150,7 +124,7 @@ const getData = async (response: express.Response, access: string) => {
         image: userDataResult.image
     };
 
-    utility.sendResponse(response, 101, 'OK', result);
+    return utility.result(101, 'OK', result);
 
 };
 
@@ -159,8 +133,13 @@ Get profile image.
 
 Response
 image file
+
+Response Code
+101 : OK
+201 : User does not exist
+202 : No profile image
 */
-const getImage = async (response: express.Response, access: string) => {
+const getImage = async (access: string) => {
 
     // print log
     utility.print(`GET /user/image | access: ${access}`);
@@ -168,10 +147,7 @@ const getImage = async (response: express.Response, access: string) => {
     const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
 
     // user exist check
-    if(!accessResult.result || accessResult.id === undefined) {
-        response.status(404).end();
-        return;
-    }
+    if(!accessResult.result || accessResult.id === undefined) return utility.result(201, 'User does not exist', undefined);
 
     const id = accessResult.id;
 
@@ -180,32 +156,26 @@ const getImage = async (response: express.Response, access: string) => {
     const image = userDataResult.image;
 
     // no profile image
-    if(image === null) {
-        response.end();
-        return
-    }
+    if(image === null) return utility.result(202, 'No profile image', undefined);
 
-    response.sendFile(path.join(__dirname, '../../../', dataConfig.imageDir, image!));
+    return utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image!));
 
 };
 
 /*
 Add profile image.
 
-Response JSON
-{code: number, message: string}
-
 Response Code
 101 : OK
 */
-const postImage = async (response: express.Response, user: number, formData: {image: object}) => {
+const postImage = async (user: number, formData: {image: object}) => {
 
     // print log
     utility.print(`POST /user/image | user: ${user}`);
 
     await userDao.addProfileImage(user, formData.image);
 
-    utility.sendResponse(response, 101, 'OK', undefined);
+    return utility.result(101, 'OK', undefined);
 
 };
 
