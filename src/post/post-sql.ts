@@ -4,6 +4,12 @@ const add = (access: string, user: number, text: string): string =>
     VALUES (NULL, "${access}", ${user}, "${text}", NULL)
     ;`;
 
+const deleteById = (id: number): string =>
+    `
+    DELETE FROM post
+    WHERE id = ${id}
+    ;`;
+
 const addImage = (post: number, image: string): string =>
     `
     INSERT INTO post_image
@@ -65,6 +71,7 @@ const selectFeedInRange = (user: number, start: number, count: number): string =
 
 export default {
     add,
+    deleteById,
     addImage,
     selectIdByAccess,
     selectNumberOfPostByUser,

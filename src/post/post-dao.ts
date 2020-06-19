@@ -44,6 +44,24 @@ const writePost = (user: number, text: string, imageList: any[]): Promise<number
 /*
 Result Code
 101 : OK
+*/
+const deletePost = (id: number) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            await mysqlManager.execute(postSQL.deleteById(id));
+
+            resolve(101);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+/*
+Result Code
+101 : OK
 201 : Post does not exist
 */
 const getPostData = (id: number): Promise<{result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]}> => {
@@ -180,6 +198,7 @@ const checkImage = (post: number, image: string): Promise<boolean> => {
 
 export default {
     writePost,
+    deletePost,
     getPostData,
     getPostFromAccess,
     getFeed,

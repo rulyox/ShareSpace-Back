@@ -41,6 +41,51 @@ const post = async (request: express.Request, response: express.Response, next: 
 };
 
 /*
+Delete post.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Response JSON
+{code: number, message: string}
+
+Response Code
+101 : OK
+201 : Post does not exist
+202 : No authorization
+*/
+const deletePost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const access = request.params.access;
+
+        // type check
+        if(access === null) {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.deletePost(user, access);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
+
+/*
 Get post data.
 
 Request Header
@@ -286,6 +331,7 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
 export default {
     post,
+    deletePost,
     getData,
     getPreview,
     getFeed,

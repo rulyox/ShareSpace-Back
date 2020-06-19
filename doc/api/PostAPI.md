@@ -28,6 +28,35 @@ files
 101 : OK
 ```
 
+## DELETE /post/:access
+
+Write new post.
+
+* Request Header
+```
+token : string
+```
+
+* Request Param
+```
+access : string
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string"
+}
+```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+202 : No authorization
+```
+
 ## GET /post/data/:access
 
 Get post data.

@@ -6,6 +6,9 @@ const router = express.Router();
 // Write new post.
 router.post('/', postController.post);
 
+// Delete post.
+router.delete('/:access', postController.deletePost);
+
 // Get post data.
 router.get('/data/:access', postController.getData);
 

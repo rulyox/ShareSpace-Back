@@ -24,6 +24,52 @@ const post = async (user: number, formData: {text: string, images: object[]}): P
 };
 
 /*
+Delete post.
+
+Response Code
+101 : OK
+201 : Post does not exist
+202 : No authorization
+*/
+const deletePost = async (user: number, access: string): Promise<APIResult> => {
+    return new Promise(async (resolve) => {
+
+        // print log
+        utility.print(`DELETE /post | user: ${user}`);
+
+        const postAccessResult: {result: boolean, id?: number} = await postDao.getPostFromAccess(access);
+
+        // post exist check
+        if(!postAccessResult.result || postAccessResult.id === undefined) {
+            resolve(utility.result(201, 'Post does not exist', undefined));
+            return;
+        }
+
+        const postId = postAccessResult.id;
+
+        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDao.getPostData(postId);
+
+        // get owner
+        const userAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(postData.user!);
+
+        const userId = userAccessResult.id;
+
+        if(user === userId) {
+
+            await postDao.deletePost(postId);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } else {
+
+            resolve(utility.result(202, 'No authorization', undefined));
+
+        }
+
+    });
+};
+
+/*
 Get post data.
 
 Response JSON Result
@@ -248,6 +294,7 @@ const getImage = async (user: number, access: string, image: string): Promise<AP
 
 export default {
     post,
+    deletePost,
     getData,
     getPreview,
     getFeed,
