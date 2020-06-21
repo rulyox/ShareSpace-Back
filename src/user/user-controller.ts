@@ -1,6 +1,6 @@
 import express from 'express';
-import userService from './user-service';
-import userUtility from './user-utility';
+import * as userService from './user-service';
+import * as userUtility from './user-utility';
 
 /*
 Check login and create token.
@@ -19,7 +19,7 @@ Response Code
 201 : Wrong email
 202 : Wrong password
 */
-const postToken = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const postToken = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -56,7 +56,7 @@ Response JSON Result
 Response Code
 101 : OK
 */
-const get = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const get = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -90,7 +90,7 @@ Response Code
 101 : OK
 201 : Email exists
 */
-const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -129,7 +129,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -164,7 +164,7 @@ Response Code
 201 : User does not exist
 202 : No profile image
 */
-const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -201,7 +201,7 @@ Response JSON
 Response Code
 101 : OK
 */
-const postImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const postImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -221,13 +221,4 @@ const postImage = async (request: express.Request, response: express.Response, n
 
     } catch(error) { next(error); }
 
-};
-
-export default {
-    postToken,
-    get,
-    post,
-    getData,
-    getImage,
-    postImage
 };

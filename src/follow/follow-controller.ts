@@ -1,5 +1,5 @@
 import express from 'express';
-import followService from './follow-service';
+import * as followService from './follow-service';
 
 /*
 Get user's following list.
@@ -17,7 +17,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollowing = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getFollowing = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -55,7 +55,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollower = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getFollower = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -93,7 +93,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getCheck = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getCheck = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -131,7 +131,7 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -158,11 +158,4 @@ const post = async (request: express.Request, response: express.Response, next: 
 
     } catch(error) { next(error); }
 
-};
-
-export default {
-    getFollowing,
-    getFollower,
-    getCheck,
-    post
 };

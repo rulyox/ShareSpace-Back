@@ -1,9 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import mysqlManager from './src/mysql-manager';
 import api from './src/api';
-import middleware from './src/middleware';
-import utility from './src/utility';
+import * as mysqlManager from './src/mysql-manager';
+import * as middleware from './src/middleware';
+import * as utility from './src/utility';
 import serverConfig from './config/server.json';
 
 // database

@@ -1,15 +1,15 @@
 import path from 'path';
-import mysqlManager from '../mysql-manager';
-import postUtility from './post-utility';
-import postSQL from './post-sql';
-import utility from '../utility';
+import * as mysqlManager from '../mysql-manager';
+import * as postUtility from './post-utility';
+import * as postSQL from './post-sql';
+import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
 /*
 Result Code
 101 : OK
 */
-const writePost = (user: number, text: string, imageList: any[]): Promise<number> => {
+export const writePost = (user: number, text: string, imageList: any[]): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -45,7 +45,7 @@ const writePost = (user: number, text: string, imageList: any[]): Promise<number
 Result Code
 101 : OK
 */
-const deletePost = (id: number) => {
+export const deletePost = (id: number) => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -64,7 +64,7 @@ Result Code
 101 : OK
 201 : Post does not exist
 */
-const getPostData = (id: number): Promise<{result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]}> => {
+export const getPostData = (id: number): Promise<{result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -101,7 +101,7 @@ const getPostData = (id: number): Promise<{result: number, user?: string, name?:
     });
 };
 
-const getPostFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
+export const getPostFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -128,7 +128,7 @@ const getPostFromAccess = (access: string): Promise<{result: boolean, id?: numbe
     });
 };
 
-const getFeed = (user: number, start: number, count: number): Promise<string[]> => {
+export const getFeed = (user: number, start: number, count: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -145,7 +145,7 @@ const getFeed = (user: number, start: number, count: number): Promise<string[]> 
     });
 };
 
-const getNumberOfPostByUser = (user: number): Promise<number> => {
+export const getNumberOfPostByUser = (user: number): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -161,7 +161,7 @@ const getNumberOfPostByUser = (user: number): Promise<number> => {
     });
 };
 
-const getPostByUser = (user: number, start: number, count: number): Promise<string[]> => {
+export const getPostByUser = (user: number, start: number, count: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -180,7 +180,7 @@ const getPostByUser = (user: number, start: number, count: number): Promise<stri
     });
 };
 
-const checkImage = (post: number, image: string): Promise<boolean> => {
+export const checkImage = (post: number, image: string): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -194,15 +194,4 @@ const checkImage = (post: number, image: string): Promise<boolean> => {
         } catch(error) { reject(error); }
 
     });
-};
-
-export default {
-    writePost,
-    deletePost,
-    getPostData,
-    getPostFromAccess,
-    getFeed,
-    getNumberOfPostByUser,
-    getPostByUser,
-    checkImage
 };

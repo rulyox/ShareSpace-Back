@@ -1,7 +1,7 @@
 import path from 'path';
-import userDao from './user-dao';
-import userUtility from './user-utility';
-import utility from '../utility';
+import * as userDAO from './user-dao';
+import * as userUtility from './user-utility';
+import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -15,13 +15,13 @@ Response Code
 201 : Wrong email
 202 : Wrong password
 */
-const postToken = async (email: string, pw: string): Promise<APIResult> => {
+export const postToken = async (email: string, pw: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`POST /user/token | email: ${email}`);
 
-        const loginResultCode: number = await userDao.checkLogin(email, pw);
+        const loginResultCode: number = await userDAO.checkLogin(email, pw);
 
         switch(loginResultCode) {
 
@@ -57,13 +57,13 @@ Response JSON Result
 Response Code
 101 : OK
 */
-const get = async (user: number): Promise<APIResult> => {
+export const get = async (user: number): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /user | user: ${user}`);
 
-        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDao.getUserData(user);
+        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDAO.getUserData(user);
 
         const result = {
             access: userDataResult.access,
@@ -83,13 +83,13 @@ Response Code
 101 : OK
 201 : Email exists
 */
-const post = async (email: string, pw: string, name: string): Promise<APIResult> => {
+export const post = async (email: string, pw: string, name: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`POST /user | email: ${email}`);
 
-        const addUserResultCode: number = await userDao.createUser(email, pw, name);
+        const addUserResultCode: number = await userDAO.createUser(email, pw, name);
 
         switch(addUserResultCode) {
 
@@ -116,13 +116,13 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getData = async (access: string): Promise<APIResult> => {
+export const getData = async (access: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /user/data | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -132,7 +132,7 @@ const getData = async (access: string): Promise<APIResult> => {
 
         const id = accessResult.id;
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDao.getUserData(id);
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDAO.getUserData(id);
 
         const result = {
             name: userDataResult.name,
@@ -155,13 +155,13 @@ Response Code
 201 : User does not exist
 202 : No profile image
 */
-const getImage = async (access: string): Promise<APIResult> => {
+export const getImage = async (access: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /user/image | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -171,7 +171,7 @@ const getImage = async (access: string): Promise<APIResult> => {
 
         const id = accessResult.id;
 
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDao.getUserData(id);
+        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDAO.getUserData(id);
 
         const image = userDataResult.image;
 
@@ -192,24 +192,15 @@ Add profile image.
 Response Code
 101 : OK
 */
-const postImage = async (user: number, formData: {image: object}): Promise<APIResult> => {
+export const postImage = async (user: number, formData: {image: object}): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`POST /user/image | user: ${user}`);
 
-        await userDao.addProfileImage(user, formData.image);
+        await userDAO.addProfileImage(user, formData.image);
 
         resolve(utility.result(101, 'OK', undefined));
 
     });
-};
-
-export default {
-    postToken,
-    get,
-    post,
-    getData,
-    getImage,
-    postImage
 };

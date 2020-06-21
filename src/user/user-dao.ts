@@ -1,8 +1,8 @@
 import path from 'path';
-import mysqlManager from '../mysql-manager';
-import userUtility from './user-utility';
-import userSQL from './user-sql';
-import utility from '../utility';
+import * as mysqlManager from '../mysql-manager';
+import * as userUtility from './user-utility';
+import * as userSQL from './user-sql';
+import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -11,7 +11,7 @@ Result Code
 201 : Wrong email
 202 : Wrong password
 */
-const checkLogin = (email: string, pw: string): Promise<number> => {
+export const checkLogin = (email: string, pw: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -35,7 +35,7 @@ const checkLogin = (email: string, pw: string): Promise<number> => {
     });
 };
 
-const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?: string, name?: string}> => {
+export const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?: string, name?: string}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -77,7 +77,7 @@ const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?:
     });
 };
 
-const getHashedPassword = (email: string, pw: string): Promise<{result: boolean, pw?: string}> => {
+export const getHashedPassword = (email: string, pw: string): Promise<{result: boolean, pw?: string}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -101,7 +101,7 @@ const getHashedPassword = (email: string, pw: string): Promise<{result: boolean,
     });
 };
 
-const getUserData = (id: number): Promise<{result: boolean, access?: string, email?: string, name?: string, image?: string}> => {
+export const getUserData = (id: number): Promise<{result: boolean, access?: string, email?: string, name?: string, image?: string}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -131,7 +131,7 @@ const getUserData = (id: number): Promise<{result: boolean, access?: string, ema
     });
 };
 
-const getUserFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
+export const getUserFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -163,7 +163,7 @@ Result Code
 101 : OK
 201 : Email exists
 */
-const createUser = (email: string, pw: string, name: string): Promise<number> => {
+export const createUser = (email: string, pw: string, name: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -194,7 +194,7 @@ const createUser = (email: string, pw: string, name: string): Promise<number> =>
     });
 };
 
-const addProfileImage = (user: number, image: any): Promise<void> => {
+export const addProfileImage = (user: number, image: any): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -213,13 +213,4 @@ const addProfileImage = (user: number, image: any): Promise<void> => {
         } catch(error) { reject(error); }
 
     });
-};
-
-export default {
-    checkLogin,
-    checkToken,
-    getUserData,
-    getUserFromAccess,
-    createUser,
-    addProfileImage
 };

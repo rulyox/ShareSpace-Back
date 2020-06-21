@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 
-const getTime = (): string => {
+export const getTime = (): string => {
 
     const time = new Date();
 
@@ -17,13 +17,13 @@ const getTime = (): string => {
 
 };
 
-const print = (log: string): void => {
+export const print = (log: string): void => {
 
     console.log(`${getTime()}| ${log}`);
 
 };
 
-const saveImage = (sourceImg: string, targetImg: string): Promise<any> => {
+export const saveImage = (sourceImg: string, targetImg: string): Promise<any> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -44,7 +44,7 @@ const saveImage = (sourceImg: string, targetImg: string): Promise<any> => {
     });
 };
 
-const result = (code: number, message: string, result: any): APIResult => {
+export const result = (code: number, message: string, result: any): APIResult => {
 
     return {
         code: code,
@@ -53,10 +53,3 @@ const result = (code: number, message: string, result: any): APIResult => {
     };
 
 }
-
-export default {
-    getTime,
-    print,
-    saveImage,
-    result
-};

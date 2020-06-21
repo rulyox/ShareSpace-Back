@@ -1,6 +1,6 @@
-import followDao from './follow-dao';
-import userDao from '../user/user-dao';
-import utility from '../utility';
+import * as followDAO from './follow-dao';
+import * as userDAO from '../user/user-dao';
+import * as utility from '../utility';
 
 /*
 Get user's following list.
@@ -12,13 +12,13 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollowing = async (access: string): Promise<APIResult> => {
+export const getFollowing = async (access: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /user/follow/ing | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -28,7 +28,7 @@ const getFollowing = async (access: string): Promise<APIResult> => {
 
         const id = accessResult.id;
 
-        const followingResult: string[] = await followDao.getFollowingList(id);
+        const followingResult: string[] = await followDAO.getFollowingList(id);
 
         const result = {
             user: followingResult
@@ -49,13 +49,13 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getFollower = async (access: string): Promise<APIResult> => {
+export const getFollower = async (access: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /user/follow/er | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -65,7 +65,7 @@ const getFollower = async (access: string): Promise<APIResult> => {
 
         const id = accessResult.id;
 
-        const followerResult: string[] = await followDao.getFollowerList(id);
+        const followerResult: string[] = await followDAO.getFollowerList(id);
 
         const result = {
             user: followerResult
@@ -86,14 +86,14 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const getCheck = async (follower: string, following: string): Promise<APIResult> => {
+export const getCheck = async (follower: string, following: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`GET /check | follower: ${follower} following: ${following}`);
 
-        const followerAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(follower);
-        const followingAccessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(following);
+        const followerAccessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(follower);
+        const followingAccessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(following);
 
         // user exist check
         if(!followerAccessResult.result || followerAccessResult.id === undefined || !followingAccessResult.result || followingAccessResult.id === undefined) {
@@ -104,7 +104,7 @@ const getCheck = async (follower: string, following: string): Promise<APIResult>
         const followerId = followerAccessResult.id;
         const followingId = followingAccessResult.id;
 
-        const checkResult: boolean = await followDao.checkFollowing(followerId, followingId);
+        const checkResult: boolean = await followDAO.checkFollowing(followerId, followingId);
 
         const result = {
             following: checkResult
@@ -122,13 +122,13 @@ Response Code
 101 : OK
 201 : User does not exist
 */
-const post = async (user: number, access: string, type: boolean): Promise<APIResult> => {
+export const post = async (user: number, access: string, type: boolean): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
         utility.print(`POST /user/follow | user: ${user} access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDao.getUserFromAccess(access);
+        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
 
         // user exist check
         if(!accessResult.result || accessResult.id === undefined) {
@@ -138,17 +138,10 @@ const post = async (user: number, access: string, type: boolean): Promise<APIRes
 
         const id = accessResult.id;
 
-        if(type) await followDao.follow(user, id);
-        else await followDao.unFollow(user, id);
+        if(type) await followDAO.follow(user, id);
+        else await followDAO.unFollow(user, id);
 
         resolve(utility.result(101, 'OK', undefined));
 
     });
-};
-
-export default {
-    getFollowing,
-    getFollower,
-    getCheck,
-    post
 };

@@ -1,10 +1,10 @@
 import express from 'express';
 import formidable from 'formidable';
 import crypto from 'crypto';
-import mysqlManager from '../mysql-manager';
-import postSQL from './post-sql';
+import * as mysqlManager from '../mysql-manager';
+import * as postSQL from './post-sql';
 
-const parseForm = (request: express.Request): Promise<{text: string, images: object[]}> => {
+export const parseForm = (request: express.Request): Promise<{text: string, images: object[]}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -34,7 +34,7 @@ const parseForm = (request: express.Request): Promise<{text: string, images: obj
     });
 };
 
-const createRandomAccess = (): Promise<string> => {
+export const createRandomAccess = (): Promise<string> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -56,9 +56,4 @@ const createRandomAccess = (): Promise<string> => {
         } catch(error) { reject(error); }
 
     });
-};
-
-export default {
-    parseForm,
-    createRandomAccess
 };

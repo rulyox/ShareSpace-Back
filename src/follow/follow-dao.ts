@@ -1,7 +1,7 @@
-import mysqlManager from '../mysql-manager';
-import followSQL from './follow-sql';
+import * as mysqlManager from '../mysql-manager';
+import * as followSQL from './follow-sql';
 
-const getFollowingList = (user: number): Promise<string[]> => {
+export const getFollowingList = (user: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -18,7 +18,7 @@ const getFollowingList = (user: number): Promise<string[]> => {
     });
 };
 
-const getFollowerList = (user: number): Promise<string[]> => {
+export const getFollowerList = (user: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -35,7 +35,7 @@ const getFollowerList = (user: number): Promise<string[]> => {
     });
 };
 
-const checkFollowing = (follower: number, following: number): Promise<boolean> => {
+export const checkFollowing = (follower: number, following: number): Promise<boolean> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -50,7 +50,7 @@ const checkFollowing = (follower: number, following: number): Promise<boolean> =
     });
 };
 
-const follow = (follower: number, following: number): Promise<void> => {
+export const follow = (follower: number, following: number): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -64,7 +64,7 @@ const follow = (follower: number, following: number): Promise<void> => {
     });
 };
 
-const unFollow = (follower: number, following: number): Promise<void> => {
+export const unFollow = (follower: number, following: number): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -76,12 +76,4 @@ const unFollow = (follower: number, following: number): Promise<void> => {
         } catch(error) { reject(error); }
 
     });
-};
-
-export default {
-    getFollowingList,
-    getFollowerList,
-    checkFollowing,
-    follow,
-    unFollow
 };

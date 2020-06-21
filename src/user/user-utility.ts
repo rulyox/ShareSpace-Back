@@ -1,11 +1,11 @@
 import express from 'express';
 import formidable from 'formidable';
 import crypto from 'crypto';
-import mysqlManager from '../mysql-manager';
-import userSQL from './user-sql';
+import * as mysqlManager from '../mysql-manager';
+import * as userSQL from './user-sql';
 import serverConfig from '../../config/server.json';
 
-const createToken = (email: string, pw: string): string => {
+export const createToken = (email: string, pw: string): string => {
 
     const credential = {
         email: email,
@@ -16,7 +16,7 @@ const createToken = (email: string, pw: string): string => {
 
 };
 
-const encryptAES = (plainText: string): string => {
+export const encryptAES = (plainText: string): string => {
 
     const iv = crypto.randomBytes(16);
 
@@ -28,7 +28,7 @@ const encryptAES = (plainText: string): string => {
 
 };
 
-const decryptAES = (cipherText: string): string => {
+export const decryptAES = (cipherText: string): string => {
 
     const iv = Buffer.from(cipherText.substring(0, 32), 'hex');
     const encryptedText = Buffer.from(cipherText.substring(32), 'hex');
@@ -41,21 +41,21 @@ const decryptAES = (cipherText: string): string => {
 
 };
 
-const createRandomSalt = () => {
+export const createRandomSalt = () => {
 
     const random = crypto.randomBytes(10);
     return random.toString('hex');
 
 };
 
-const hash = (plainText: string, salt: string) => {
+export const hash = (plainText: string, salt: string) => {
 
     const cipherText = crypto.pbkdf2Sync(plainText, salt, 100000, 64, 'sha512');
     return cipherText.toString('hex');
 
 };
 
-const parseForm = (request: express.Request): Promise<{image: object}> => {
+export const parseForm = (request: express.Request): Promise<{image: object}> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -79,7 +79,7 @@ const parseForm = (request: express.Request): Promise<{image: object}> => {
     });
 };
 
-const createRandomAccess = (): Promise<string> => {
+export const createRandomAccess = (): Promise<string> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -101,14 +101,4 @@ const createRandomAccess = (): Promise<string> => {
         } catch(error) { reject(error); }
 
     });
-};
-
-export default {
-    createToken,
-    encryptAES,
-    decryptAES,
-    createRandomSalt,
-    hash,
-    parseForm,
-    createRandomAccess
 };

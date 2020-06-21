@@ -1,57 +1,47 @@
-const select = (email: string, pw: string): string =>
+export const select = (email: string, pw: string): string =>
     `
     SELECT id, email, name
     FROM user
     WHERE email = "${email}" AND pw = "${pw}"
     ;`;
 
-const selectSaltByEmail = (email: string): string =>
+export const selectSaltByEmail = (email: string): string =>
     `
     SELECT salt
     FROM user
     WHERE email = "${email}"
     ;`;
 
-const selectIdByAccess = (access: string): string =>
+export const selectIdByAccess = (access: string): string =>
     `
     SELECT id
     FROM user
     WHERE access = "${access}"
     ;`;
 
-const selectByID = (id: number): string =>
+export const selectByID = (id: number): string =>
     `
     SELECT access, email, name, image
     FROM user
     WHERE id = ${id}
     ;`;
 
-const checkEmail = (email: string): string =>
+export const checkEmail = (email: string): string =>
     `
     SELECT id
     FROM user
     WHERE email = "${email}"
     ;`;
 
-const add = (access: string, email: string, pw: string, salt: string, name: string): string =>
+export const add = (access: string, email: string, pw: string, salt: string, name: string): string =>
     `
     INSERT INTO user
     VALUES (NULL, "${access}", "${email}", "${pw}", "${salt}", "${name}", NULL)
     ;`;
 
-const addProfileImage = (id: number, image: string): string =>
+export const addProfileImage = (id: number, image: string): string =>
     `
     UPDATE user
     SET image = "${image}"
     WHERE id = ${id}
     ;`;
-
-export default {
-    select,
-    selectSaltByEmail,
-    selectIdByAccess,
-    selectByID,
-    checkEmail,
-    add,
-    addProfileImage
-};

@@ -1,8 +1,8 @@
 import express from 'express';
-import userDao from './user/user-dao';
-import utility from './utility';
+import * as userDao from './user/user-dao';
+import * as utility from './utility';
 
-const authChecker = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const authChecker = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const token = request.headers.token;
     let user = null;
@@ -31,15 +31,10 @@ const authChecker = async (request: express.Request, response: express.Response,
 
 };
 
-const errorHandler = (error: Error, request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const errorHandler = (error: Error, request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     utility.print(`Error\n${error}`);
 
     response.status(500).end();
 
-};
-
-export default {
-    authChecker,
-    errorHandler,
 };

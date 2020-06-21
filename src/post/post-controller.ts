@@ -1,6 +1,6 @@
 import express from 'express';
-import postService from './post-service';
-import postUtility from './post-utility';
+import * as postService from './post-service';
+import * as postUtility from './post-utility';
 
 /*
 Write new post.
@@ -18,7 +18,7 @@ Response JSON
 Response Code
 101 : OK
 */
-const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const post = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -57,7 +57,7 @@ Response Code
 201 : Post does not exist
 202 : No authorization
 */
-const deletePost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const deletePost = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -104,7 +104,7 @@ Response Code
 101 : OK
 201 : Post does not exist
 */
-const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getData = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -151,7 +151,7 @@ Response Code
 101 : OK
 201 : Post does not exist
 */
-const getPreview = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getPreview = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -198,7 +198,7 @@ Response JSON Result
 Response Code
 101 : OK
 */
-const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getFeed = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -251,7 +251,7 @@ Response Code
 201 : User does not exist
 201 : Wrong range
 */
-const getUser = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getUser = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -299,7 +299,7 @@ Response Code
 201 : Post does not exist
 202 : Image does not exist
 */
-const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+export const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     try {
 
@@ -327,14 +327,4 @@ const getImage = async (request: express.Request, response: express.Response, ne
 
     } catch(error) { next(error); }
 
-};
-
-export default {
-    post,
-    deletePost,
-    getData,
-    getPreview,
-    getFeed,
-    getUser,
-    getImage
 };
