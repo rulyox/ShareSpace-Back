@@ -2,6 +2,7 @@ import path from 'path';
 import * as userDAO from './user-dao';
 import * as userUtility from './user-utility';
 import * as utility from '../utility';
+import { User } from "../@types/class";
 import dataConfig from '../../config/data.json';
 
 /*
@@ -57,18 +58,18 @@ Response JSON Result
 Response Code
 101 : OK
 */
-export const get = async (user: number): Promise<APIResult> => {
+export const get = async (userId: number): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
-        utility.print(`GET /user | user: ${user}`);
+        utility.print(`GET /user | user: ${userId}`);
 
-        const userDataResult: {result: boolean, access? :string, email? :string, name?: string} = await userDAO.getUserData(user);
+        const user: User = await userDAO.getUserById(userId);
 
         const result = {
-            access: userDataResult.access,
-            email: userDataResult.email,
-            name: userDataResult.name
+            access: user.access,
+            email: user.email,
+            name: user.name
         };
 
         resolve(utility.result(101, 'OK', result));
@@ -122,21 +123,17 @@ export const getData = async (access: string): Promise<APIResult> => {
         // print log
         utility.print(`GET /user/data | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
+        const user: User = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(user === undefined) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDAO.getUserData(id);
-
         const result = {
-            name: userDataResult.name,
-            image: userDataResult.image
+            name: user.name,
+            image: user.image
         };
 
         resolve(utility.result(101, 'OK', result));
@@ -161,19 +158,15 @@ export const getImage = async (access: string): Promise<APIResult> => {
         // print log
         utility.print(`GET /user/image | access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
+        const user: User = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(user === undefined) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-
-        const userDataResult: {result: boolean, email? :string, name?: string, image?: string} = await userDAO.getUserData(id);
-
-        const image = userDataResult.image;
+        const image = user.image;
 
         // no profile image
         if(image === null) {

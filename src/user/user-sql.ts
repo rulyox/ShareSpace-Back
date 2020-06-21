@@ -12,18 +12,18 @@ export const selectSaltByEmail = (email: string): string =>
     WHERE email = "${email}"
     ;`;
 
-export const selectIdByAccess = (access: string): string =>
-    `
-    SELECT id
-    FROM user
-    WHERE access = "${access}"
-    ;`;
-
 export const selectByID = (id: number): string =>
     `
-    SELECT access, email, name, image
+    SELECT *
     FROM user
     WHERE id = ${id}
+    ;`;
+
+export const selectByAccess = (access: string): string =>
+    `
+    SELECT *
+    FROM user
+    WHERE access = "${access}"
     ;`;
 
 export const checkEmail = (email: string): string =>

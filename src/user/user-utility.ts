@@ -92,7 +92,7 @@ export const createRandomAccess = (): Promise<string> => {
                 const random = crypto.randomBytes(10);
                 access = 'u' + random.toString('hex');
 
-                getAccessQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+                getAccessQuery = await mysqlManager.execute(userSQL.selectByAccess(access));
 
             } while(getAccessQuery.length !== 0);
 

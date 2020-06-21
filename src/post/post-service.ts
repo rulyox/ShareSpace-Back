@@ -2,6 +2,7 @@ import path from 'path';
 import * as postDAO from './post-dao';
 import * as userDAO from '../user/user-dao';
 import * as utility from '../utility';
+import { User } from '../@types/class';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -31,11 +32,11 @@ Response Code
 201 : Post does not exist
 202 : No authorization
 */
-export const deletePost = async (user: number, access: string): Promise<APIResult> => {
+export const deletePost = async (userId: number, access: string): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
-        utility.print(`DELETE /post | user: ${user}`);
+        utility.print(`DELETE /post | user: ${userId}`);
 
         const postAccessResult: {result: boolean, id?: number} = await postDAO.getPostFromAccess(access);
 
@@ -50,11 +51,9 @@ export const deletePost = async (user: number, access: string): Promise<APIResul
         const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDAO.getPostData(postId);
 
         // get owner
-        const userAccessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(postData.user!);
+        const user: User = await userDAO.getUserByAccess(postData.user!);
 
-        const userId = userAccessResult.id;
-
-        if(user === userId) {
+        if(userId === user.id) {
 
             await postDAO.deletePost(postId);
 
@@ -212,30 +211,28 @@ Response Code
 201 : User does not exist
 201 : Wrong range
 */
-export const getUser = async (user: number, access: string, start: number, count: number): Promise<APIResult> => {
+export const getUser = async (userId: number, access: string, start: number, count: number): Promise<APIResult> => {
     return new Promise(async (resolve) => {
 
         // print log
-        utility.print(`GET /post/user | user: ${user} start: ${start} count: ${count}`);
+        utility.print(`GET /post/user | user: ${userId} start: ${start} count: ${count}`);
 
-        const accessResult: {result: boolean, id?: number} = await userDAO.getUserFromAccess(access);
+        const user: User = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(user === undefined) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-
         // get number of posts by user
-        const postCount = await postDAO.getNumberOfPostByUser(id);
+        const postCount = await postDAO.getNumberOfPostByUser(userId);
 
         // start should be 0 from postCount-1
         if(start >= 0 && start < postCount) {
 
             // get post list by user
-            const postList: string[] = await postDAO.getPostByUser(id, start, count);
+            const postList: string[] = await postDAO.getPostByUser(userId, start, count);
 
             const result = {
                 total: postCount,

@@ -1,5 +1,5 @@
 interface APIResult {
-    code: number,
-    message: string,
-    result: any
+    code: number;
+    message: string;
+    result: any;
 }

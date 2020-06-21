@@ -3,6 +3,7 @@ import * as mysqlManager from '../mysql-manager';
 import * as userUtility from './user-utility';
 import * as userSQL from './user-sql';
 import * as utility from '../utility';
+import { User } from '../@types/class';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -101,7 +102,7 @@ export const getHashedPassword = (email: string, pw: string): Promise<{result: b
     });
 };
 
-export const getUserData = (id: number): Promise<{result: boolean, access?: string, email?: string, name?: string, image?: string}> => {
+export const getUserById = (id: number): Promise<User> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -110,19 +111,14 @@ export const getUserData = (id: number): Promise<{result: boolean, access?: stri
 
             if(getUserQuery?.length === 0) { // if id does not exist
 
-                resolve({ result: false });
+                resolve(undefined);
 
             } else {
 
                 const userData = getUserQuery[0];
 
-                resolve({
-                    result: true,
-                    access: userData?.access,
-                    email: userData?.email,
-                    name: userData?.name,
-                    image: userData?.image
-                });
+                const user = new User(userData?.id, userData?.access, userData?.email, userData?.name, userData?.image);
+                resolve(user);
 
             }
 
@@ -131,25 +127,23 @@ export const getUserData = (id: number): Promise<{result: boolean, access?: stri
     });
 };
 
-export const getUserFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
+export const getUserByAccess = (access: string): Promise<User> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const getUserQuery = (await mysqlManager.execute(userSQL.selectIdByAccess(access)));
+            const getUserQuery = (await mysqlManager.execute(userSQL.selectByAccess(access)));
 
-            if(getUserQuery?.length === 0) { // if id does not exist
+            if(getUserQuery?.length === 0) { // if access does not exist
 
-                resolve({ result: false });
+                resolve(undefined);
 
             } else {
 
                 const userData = getUserQuery[0];
 
-                resolve({
-                    result: true,
-                    id: userData?.id
-                });
+                const user = new User(userData?.id, userData?.access, userData?.email, userData?.name, userData?.image);
+                resolve(user);
 
             }
 
