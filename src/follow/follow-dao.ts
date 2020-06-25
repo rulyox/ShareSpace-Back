@@ -1,12 +1,12 @@
-import * as mysqlManager from '../mysql-manager';
-import * as followSQL from './follow-sql';
+import * as DB from '../mysql-manager';
+import { followSQL } from '../follow';
 
 export const getFollowingList = (user: number): Promise<string[]> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const getFollowingQuery = await mysqlManager.execute(followSQL.selectFollowing(user));
+            const getFollowingQuery = await DB.execute(followSQL.selectFollowing(user));
 
             const followingList = [];
             for(const following of getFollowingQuery) followingList.push(following.access);
@@ -23,7 +23,7 @@ export const getFollowerList = (user: number): Promise<string[]> => {
 
         try {
 
-            const getFollowerQuery = await mysqlManager.execute(followSQL.selectFollower(user));
+            const getFollowerQuery = await DB.execute(followSQL.selectFollower(user));
 
             const followerList = [];
             for(const follower of getFollowerQuery) followerList.push(follower.access);
@@ -40,7 +40,7 @@ export const checkFollowing = (follower: number, following: number): Promise<boo
 
         try {
 
-            const checkQuery = await mysqlManager.execute(followSQL.checkFollowing(follower, following));
+            const checkQuery = await DB.execute(followSQL.checkFollowing(follower, following));
 
             if(checkQuery.length === 1) resolve(true);
             else resolve(false);
@@ -55,7 +55,7 @@ export const follow = (follower: number, following: number): Promise<void> => {
 
         try {
 
-            await mysqlManager.execute(followSQL.addFollow(follower, following));
+            await DB.execute(followSQL.addFollow(follower, following));
 
             resolve();
 
@@ -69,7 +69,7 @@ export const unFollow = (follower: number, following: number): Promise<void> => 
 
         try {
 
-            await mysqlManager.execute(followSQL.deleteFollow(follower, following));
+            await DB.execute(followSQL.deleteFollow(follower, following));
 
             resolve();
 

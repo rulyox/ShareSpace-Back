@@ -1,6 +1,5 @@
-import { User } from '../user/user';
-import * as followDAO from './follow-dao';
-import * as userDAO from '../user/user-dao';
+import { User, userDAO } from '../user';
+import { followDAO } from '../follow';
 import * as utility from '../utility';
 
 /*

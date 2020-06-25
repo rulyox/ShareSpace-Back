@@ -1,5 +1,5 @@
 import express from 'express';
-import * as followService from './follow-service';
+import { followService } from '../follow';
 
 /*
 Get user's following list.

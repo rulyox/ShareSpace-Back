@@ -1,6 +1,5 @@
 import express from 'express';
-import * as userService from './user-service';
-import * as userUtility from './user-utility';
+import { userService, userUtility } from '../user';
 
 /*
 Check login and create token.

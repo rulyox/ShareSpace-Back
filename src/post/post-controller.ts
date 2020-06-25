@@ -1,6 +1,5 @@
 import express from 'express';
-import * as postService from './post-service';
-import * as postUtility from './post-utility';
+import { postService, postUtility } from '../post';
 
 /*
 Write new post.

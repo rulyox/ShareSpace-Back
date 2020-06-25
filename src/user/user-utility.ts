@@ -1,8 +1,8 @@
 import express from 'express';
 import formidable from 'formidable';
 import crypto from 'crypto';
-import * as mysqlManager from '../mysql-manager';
-import * as userSQL from './user-sql';
+import * as DB from '../mysql-manager';
+import { userSQL } from '../user';
 import serverConfig from '../../config/server.json';
 
 export const createToken = (email: string, pw: string): string => {
@@ -92,7 +92,7 @@ export const createRandomAccess = (): Promise<string> => {
                 const random = crypto.randomBytes(10);
                 access = 'u' + random.toString('hex');
 
-                getAccessQuery = await mysqlManager.execute(userSQL.selectByAccess(access));
+                getAccessQuery = await DB.execute(userSQL.selectByAccess(access));
 
             } while(getAccessQuery.length !== 0);
 

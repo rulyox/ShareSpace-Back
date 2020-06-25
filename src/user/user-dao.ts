@@ -1,8 +1,6 @@
 import path from 'path';
-import * as mysqlManager from '../mysql-manager';
-import { User } from './user';
-import * as userUtility from './user-utility';
-import * as userSQL from './user-sql';
+import * as DB from '../mysql-manager';
+import { User, userSQL, userUtility } from '../user';
 import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -24,7 +22,7 @@ export const checkLogin = (email: string, pw: string): Promise<number> => {
 
                 const hashedPassword = pwResult.pw!;
 
-                const loginQuery = await mysqlManager.execute(userSQL.select(email, hashedPassword));
+                const loginQuery = await DB.execute(userSQL.select(email, hashedPassword));
 
                 if(loginQuery.length === 1) resolve(101);
                 else resolve(202);
@@ -62,7 +60,7 @@ export const checkToken = (token: string): Promise<{auth: boolean, id?: number, 
 
                 const hashedPassword = pwResult.pw!;
 
-                const loginQuery = (await mysqlManager.execute(userSQL.select(email, hashedPassword)))[0];
+                const loginQuery = (await DB.execute(userSQL.select(email, hashedPassword)))[0];
 
                 resolve({
                     auth: true,
@@ -83,7 +81,7 @@ export const getHashedPassword = (email: string, pw: string): Promise<{result: b
 
         try {
 
-            const saltQuery = await mysqlManager.execute(userSQL.selectSaltByEmail(email));
+            const saltQuery = await DB.execute(userSQL.selectSaltByEmail(email));
 
             if(saltQuery.length === 1) {
 
@@ -107,7 +105,7 @@ export const getUserById = (id: number): Promise<User> => {
 
         try {
 
-            const getUserQuery = (await mysqlManager.execute(userSQL.selectByID(id)));
+            const getUserQuery = (await DB.execute(userSQL.selectByID(id)));
 
             if(getUserQuery?.length === 0) { // if id does not exist
 
@@ -132,7 +130,7 @@ export const getUserByAccess = (access: string): Promise<User> => {
 
         try {
 
-            const getUserQuery = (await mysqlManager.execute(userSQL.selectByAccess(access)));
+            const getUserQuery = (await DB.execute(userSQL.selectByAccess(access)));
 
             if(getUserQuery?.length === 0) { // if access does not exist
 
@@ -163,7 +161,7 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
         try {
 
             // check if same email exists
-            const emailCheckQuery = await mysqlManager.execute(userSQL.checkEmail(email));
+            const emailCheckQuery = await DB.execute(userSQL.checkEmail(email));
 
             if(emailCheckQuery.length === 0) {
 
@@ -176,7 +174,7 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
                 // generate hashed password
                 pw = userUtility.hash(pw, salt);
 
-                const userAddQuery = await mysqlManager.execute(userSQL.add(access, email, pw, salt, name));
+                const userAddQuery = await DB.execute(userSQL.add(access, email, pw, salt, name));
 
                 if(userAddQuery.affectedRows === 1) resolve(101);
                 else reject('User Add Failed')
@@ -200,7 +198,7 @@ export const addProfileImage = (user: number, image: any): Promise<void> => {
             await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
 
             // add image to db
-            await mysqlManager.execute(userSQL.addProfileImage(user, imageName));
+            await DB.execute(userSQL.addProfileImage(user, imageName));
 
             resolve();
 

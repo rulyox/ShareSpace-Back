@@ -1,7 +1,5 @@
 import path from 'path';
-import { User } from './user';
-import * as userDAO from './user-dao';
-import * as userUtility from './user-utility';
+import { User, userDAO, userUtility } from '../user';
 import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
