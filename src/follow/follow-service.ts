@@ -1,7 +1,7 @@
+import { User } from '../user/user';
 import * as followDAO from './follow-dao';
 import * as userDAO from '../user/user-dao';
 import * as utility from '../utility';
-import { User } from '../@types/class';
 
 /*
 Get user's following list.

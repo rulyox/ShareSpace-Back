@@ -1,9 +1,9 @@
 import path from 'path';
 import * as mysqlManager from '../mysql-manager';
+import { User } from './user';
 import * as userUtility from './user-utility';
 import * as userSQL from './user-sql';
 import * as utility from '../utility';
-import { User } from '../@types/class';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -117,7 +117,7 @@ export const getUserById = (id: number): Promise<User> => {
 
                 const userData = getUserQuery[0];
 
-                const user = new User(userData?.id, userData?.access, userData?.email, userData?.name, userData?.image);
+                const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
                 resolve(user);
 
             }
@@ -142,7 +142,7 @@ export const getUserByAccess = (access: string): Promise<User> => {
 
                 const userData = getUserQuery[0];
 
-                const user = new User(userData?.id, userData?.access, userData?.email, userData?.name, userData?.image);
+                const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
                 resolve(user);
 
             }

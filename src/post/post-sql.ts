@@ -41,7 +41,7 @@ export const selectPostByUserInRange = (user: number, start: number, count: numb
 
 export const selectPostData = (id: number): string =>
     `
-    SELECT user.id AS user, user.access AS access, user.name AS name, user.image AS profile, post.text AS text
+    SELECT user.id AS user, user.access AS access, user.name AS name, user.image AS profile, post.text AS text, post.time AS time
     FROM post, user
     WHERE post.id = ${id}
     AND post.user = user.id

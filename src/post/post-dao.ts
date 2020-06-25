@@ -1,5 +1,6 @@
 import path from 'path';
 import * as mysqlManager from '../mysql-manager';
+import { Post } from './post';
 import * as postUtility from './post-utility';
 import * as postSQL from './post-sql';
 import * as utility from '../utility';
@@ -59,18 +60,13 @@ export const deletePost = (id: number) => {
     });
 };
 
-/*
-Result Code
-101 : OK
-201 : Post does not exist
-*/
-export const getPostData = (id: number): Promise<{result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]}> => {
+export const getPostData = (id: number): Promise<Post> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
             // get data of a post
-            const postDataQuery: {user: number, access: string, name: string, profile: string, text: string}[] = (await mysqlManager.execute(postSQL.selectPostData(id)));
+            const postDataQuery: {user: number, access: string, name: string, profile: string, text: string, time: string}[] = (await mysqlManager.execute(postSQL.selectPostData(id)));
 
             if(postDataQuery.length === 1) {
 
@@ -81,18 +77,14 @@ export const getPostData = (id: number): Promise<{result: number, user?: string,
                 const imageList = [];
                 for(const image of postImageQuery) imageList.push(image.image);
 
-                resolve({
-                    result: 101,
-                    user: postDataQuery[0].access,
-                    name: postDataQuery[0].name,
-                    profile: postDataQuery[0].profile,
-                    text: postDataQuery[0].text,
-                    image: imageList
-                });
+                const postData = postDataQuery[0];
+                const post = new Post(postData.access, postData.name, postData.profile, postData.text, postData.time, imageList);
+
+                resolve(post);
 
             } else { // if post does not exist
 
-                resolve({ result: 201 });
+                resolve(undefined);
 
             }
 

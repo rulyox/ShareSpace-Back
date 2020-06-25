@@ -1,8 +1,9 @@
 import path from 'path';
+import { User } from '../user/user';
+import { Post } from './post';
 import * as postDAO from './post-dao';
 import * as userDAO from '../user/user-dao';
 import * as utility from '../utility';
-import { User } from '../@types/class';
 import dataConfig from '../../config/data.json';
 
 /*
@@ -47,11 +48,10 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
         }
 
         const postId = postAccessResult.id;
-
-        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDAO.getPostData(postId);
+        const post: Post = await postDAO.getPostData(postId);
 
         // get owner
-        const user: User = await userDAO.getUserByAccess(postData.user!);
+        const user: User = await userDAO.getUserByAccess(post.userAccess);
 
         if(userId === user.id) {
 
@@ -93,26 +93,23 @@ export const getData = async (user: number, access: string): Promise<APIResult> 
         }
 
         const id = accessResult.id;
+        const post: Post = await postDAO.getPostData(id);
 
-        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDAO.getPostData(id);
+        if(post !== undefined) {
 
-        switch(postData.result) {
+            const result = {
+                user: post.userAccess,
+                name: post.userName,
+                profile: post.userProfile,
+                text: post.text,
+                image: post.image
+            };
 
-            case 101:
-                const result = {
-                    user: postData.user,
-                    name: postData.name,
-                    profile: postData.profile,
-                    text: postData.text,
-                    image: postData.image
-                };
+            resolve(utility.result(101, 'OK', result));
 
-                resolve(utility.result(101, 'OK', result));
-                break;
+        } else {
 
-            case 201:
-                resolve(utility.result(201, 'Post does not exist', undefined));
-                break;
+            resolve(utility.result(201, 'Post does not exist', undefined));
 
         }
 
@@ -144,30 +141,27 @@ export const getPreview = async (user: number, access: string): Promise<APIResul
         }
 
         const id = accessResult.id;
+        const post: Post = await postDAO.getPostData(id);
 
-        const postData: {result: number, user?: string, name?: string, profile?: string, text?: string, image?: string[]} = await postDAO.getPostData(id);
+        if(post !== undefined) {
 
-        // create preview image from first image
-        let previewImage: string|null = null;
-        if(postData.image !== undefined && postData.image.length > 0) previewImage = postData.image[0];
+            // create preview image from first image
+            let previewImage: string|null = null;
+            if(post.image !== undefined && post.image.length > 0) previewImage = post.image[0];
 
-        switch(postData.result) {
+            const result = {
+                user: post.userAccess,
+                name: post.userName,
+                profile: post.userProfile,
+                text: post.text,
+                image: previewImage
+            };
 
-            case 101:
-                const result = {
-                    user: postData.user,
-                    name: postData.name,
-                    profile: postData.profile,
-                    text: postData.text,
-                    image: previewImage
-                };
+            resolve(utility.result(101, 'OK', result));
 
-                resolve(utility.result(101, 'OK', result));
-                break;
+        } else {
 
-            case 201:
-                resolve(utility.result(201, 'Post does not exist', undefined));
-                break;
+            resolve(utility.result(201, 'Post does not exist', undefined));
 
         }
 
