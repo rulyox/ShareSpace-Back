@@ -54,6 +54,7 @@ Response JSON Result
 
 Response Code
 101 : OK
+201 : User does not exist
 */
 export const get = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 

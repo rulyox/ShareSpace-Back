@@ -6,10 +6,10 @@ export const getFollowingList = (user: number): Promise<string[]> => {
 
         try {
 
-            const getFollowingQuery = await DB.execute(followSQL.selectFollowing(user));
+            const selectFollowing = await DB.execute(followSQL.selectFollowing(user));
 
             const followingList = [];
-            for(const following of getFollowingQuery) followingList.push(following.access);
+            for(const following of selectFollowing) followingList.push(following.access);
 
             resolve(followingList);
 
@@ -23,10 +23,10 @@ export const getFollowerList = (user: number): Promise<string[]> => {
 
         try {
 
-            const getFollowerQuery = await DB.execute(followSQL.selectFollower(user));
+            const selectFollower = await DB.execute(followSQL.selectFollower(user));
 
             const followerList = [];
-            for(const follower of getFollowerQuery) followerList.push(follower.access);
+            for(const follower of selectFollower) followerList.push(follower.access);
 
             resolve(followerList);
 
@@ -40,9 +40,9 @@ export const checkFollowing = (follower: number, following: number): Promise<boo
 
         try {
 
-            const checkQuery = await DB.execute(followSQL.checkFollowing(follower, following));
+            const checkFollowing = await DB.execute(followSQL.checkFollowing(follower, following));
 
-            if(checkQuery.length === 1) resolve(true);
+            if(checkFollowing.length === 1) resolve(true);
             else resolve(false);
 
         } catch(error) { reject(error); }

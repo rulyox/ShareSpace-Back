@@ -65,6 +65,7 @@ token : string
 * Response Code
 ```
 101 : OK
+201 : User does not exist
 ```
 
 ## POST /user

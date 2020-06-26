@@ -26,10 +26,10 @@ export const getFollowing = async (access: string): Promise<APIResult> => {
             return;
         }
 
-        const followingResult: string[] = await followDAO.getFollowingList(user.id);
+        const followingList: string[] = await followDAO.getFollowingList(user.id);
 
         const result = {
-            user: followingResult
+            user: followingList
         };
 
         resolve(utility.result(101, 'OK', result));
@@ -61,10 +61,10 @@ export const getFollower = async (access: string): Promise<APIResult> => {
             return;
         }
 
-        const followerResult: string[] = await followDAO.getFollowerList(user.id);
+        const followerList: string[] = await followDAO.getFollowerList(user.id);
 
         const result = {
-            user: followerResult
+            user: followerList
         };
 
         resolve(utility.result(101, 'OK', result));
@@ -97,10 +97,10 @@ export const getCheck = async (followerAccess: string, followingAccess: string):
             return;
         }
 
-        const checkResult: boolean = await followDAO.checkFollowing(follower.id, following.id);
+        const isFollowing: boolean = await followDAO.checkFollowing(follower.id, following.id);
 
         const result = {
-            following: checkResult
+            following: isFollowing
         };
 
         resolve(utility.result(101, 'OK', result));
