@@ -1,6 +1,6 @@
-export const select = (email: string, pw: string): string =>
+export const selectByEmailPw = (email: string, pw: string): string =>
     `
-    SELECT id, email, name
+    SELECT *
     FROM user
     WHERE email = "${email}" AND pw = "${pw}"
     ;`;

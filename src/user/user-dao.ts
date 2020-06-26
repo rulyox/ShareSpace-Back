@@ -16,15 +16,13 @@ export const checkLogin = (email: string, pw: string): Promise<number> => {
         try {
 
             // hash password
-            const pwResult: {result: boolean, pw?: string} = await getHashedPassword(email, pw);
+            const hashedPassword: string = await getHashedPassword(email, pw);
 
-            if(pwResult.result) {
+            if(hashedPassword !== undefined) {
 
-                const hashedPassword = pwResult.pw!;
+                const selectByEmailPw = await DB.execute(userSQL.selectByEmailPw(email, hashedPassword));
 
-                const loginQuery = await DB.execute(userSQL.select(email, hashedPassword));
-
-                if(loginQuery.length === 1) resolve(101);
+                if(selectByEmailPw.length === 1) resolve(101);
                 else resolve(202);
 
             } else resolve(201);
@@ -34,20 +32,20 @@ export const checkLogin = (email: string, pw: string): Promise<number> => {
     });
 };
 
-export const checkToken = (token: string): Promise<{auth: boolean, id?: number, email?: string, name?: string}> => {
+export const checkToken = (token: string): Promise<User|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
             // get credential from token
-            let credential = JSON.parse(userUtility.decryptAES(token));
+            const credential = JSON.parse(userUtility.decryptAES(token));
 
             // type check
-            const email = credential?.email;
-            const pw = credential?.pw;
+            const email = credential.email;
+            const pw = credential.pw;
 
             if(typeof email !== 'string' || typeof pw !== 'string') {
-                resolve({ auth: false });
+                resolve(null);
                 return;
             }
 
@@ -56,64 +54,56 @@ export const checkToken = (token: string): Promise<{auth: boolean, id?: number, 
             if(loginResult === 101) {
 
                 // hash password
-                const pwResult: {result: boolean, pw?: string} = await getHashedPassword(email, pw);
+                const hashedPassword: string = await getHashedPassword(email, pw);
 
-                const hashedPassword = pwResult.pw!;
+                const selectByEmailPw = await DB.execute(userSQL.selectByEmailPw(email, hashedPassword));
+                const userData = selectByEmailPw[0];
 
-                const loginQuery = (await DB.execute(userSQL.select(email, hashedPassword)))[0];
+                const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
+                resolve(user);
 
-                resolve({
-                    auth: true,
-                    id: loginQuery?.id,
-                    email: loginQuery?.email,
-                    name: loginQuery?.name
-                });
-
-            } else resolve({ auth: false });
+            } else resolve(null);
 
         } catch(error) { reject(error); }
 
     });
 };
 
-export const getHashedPassword = (email: string, pw: string): Promise<{result: boolean, pw?: string}> => {
+export const getHashedPassword = (email: string, pw: string): Promise<string> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const saltQuery = await DB.execute(userSQL.selectSaltByEmail(email));
+            const selectSaltByEmail = await DB.execute(userSQL.selectSaltByEmail(email));
 
-            if(saltQuery.length === 1) {
+            if(selectSaltByEmail.length === 1) {
 
-                const salt: string = saltQuery[0].salt;
+                const salt: string = selectSaltByEmail[0].salt;
                 const hashedPassword: string = userUtility.hash(pw, salt);
 
-                resolve({
-                    result: true,
-                    pw: hashedPassword
-                });
+                resolve(hashedPassword);
 
-            } else resolve({ result: false });
+            } else resolve(undefined);
 
         } catch(error) { reject(error); }
 
     });
 };
 
-export const getUserById = (id: number): Promise<User> => {
+export const getUserById = (id: number): Promise<User|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const getUserQuery = (await DB.execute(userSQL.selectByID(id)));
+            const selectByID = (await DB.execute(userSQL.selectByID(id)));
 
-            if(getUserQuery?.length === 0) { // if id does not exist
+            if(selectByID.length === 0) { // if id does not exist
 
-                resolve(undefined);
+                resolve(null);
 
             } else {
 
-                const userData = getUserQuery[0];
+                const userData = selectByID[0];
 
                 const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
                 resolve(user);
@@ -125,20 +115,20 @@ export const getUserById = (id: number): Promise<User> => {
     });
 };
 
-export const getUserByAccess = (access: string): Promise<User> => {
+export const getUserByAccess = (access: string): Promise<User|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const getUserQuery = (await DB.execute(userSQL.selectByAccess(access)));
+            const selectByAccess = (await DB.execute(userSQL.selectByAccess(access)));
 
-            if(getUserQuery?.length === 0) { // if access does not exist
+            if(selectByAccess.length === 0) { // if access does not exist
 
-                resolve(undefined);
+                resolve(null);
 
             } else {
 
-                const userData = getUserQuery[0];
+                const userData = selectByAccess[0];
 
                 const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
                 resolve(user);
@@ -161,9 +151,9 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
         try {
 
             // check if same email exists
-            const emailCheckQuery = await DB.execute(userSQL.checkEmail(email));
+            const checkEmail = await DB.execute(userSQL.checkEmail(email));
 
-            if(emailCheckQuery.length === 0) {
+            if(checkEmail.length === 0) {
 
                 // generate random access key
                 const access: string = await userUtility.createRandomAccess();
@@ -174,9 +164,9 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
                 // generate hashed password
                 pw = userUtility.hash(pw, salt);
 
-                const userAddQuery = await DB.execute(userSQL.add(access, email, pw, salt, name));
+                const add = await DB.execute(userSQL.add(access, email, pw, salt, name));
 
-                if(userAddQuery.affectedRows === 1) resolve(101);
+                if(add.affectedRows === 1) resolve(101);
                 else reject('User Add Failed')
 
             } else resolve(201);

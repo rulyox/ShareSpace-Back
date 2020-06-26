@@ -49,9 +49,9 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
         const post: Post = await postDAO.getPostData(postId);
 
         // get owner
-        const user: User = await userDAO.getUserByAccess(post.userAccess);
+        const user: User|null = await userDAO.getUserByAccess(post.userAccess);
 
-        if(userId === user.id) {
+        if(user !== null && userId === user.id) {
 
             await postDAO.deletePost(postId);
 
@@ -209,10 +209,10 @@ export const getUser = async (userId: number, access: string, start: number, cou
         // print log
         utility.print(`GET /post/user | user: ${userId} start: ${start} count: ${count}`);
 
-        const user: User = await userDAO.getUserByAccess(access);
+        const user: User|null = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(user === undefined) {
+        if(user === null) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }

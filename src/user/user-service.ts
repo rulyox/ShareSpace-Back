@@ -20,9 +20,9 @@ export const postToken = async (email: string, pw: string): Promise<APIResult> =
         // print log
         utility.print(`POST /user/token | email: ${email}`);
 
-        const loginResultCode: number = await userDAO.checkLogin(email, pw);
+        const checkLogin: number = await userDAO.checkLogin(email, pw);
 
-        switch(loginResultCode) {
+        switch(checkLogin) {
 
             case 101:
                 const token: string = userUtility.createToken(email, pw);
@@ -55,6 +55,7 @@ Response JSON Result
 
 Response Code
 101 : OK
+201 : User does not exist
 */
 export const get = async (userId: number): Promise<APIResult> => {
     return new Promise(async (resolve) => {
@@ -62,7 +63,12 @@ export const get = async (userId: number): Promise<APIResult> => {
         // print log
         utility.print(`GET /user | user: ${userId}`);
 
-        const user: User = await userDAO.getUserById(userId);
+        const user: User|null = await userDAO.getUserById(userId);
+
+        if(user === null) {
+            resolve(utility.result(201, 'User does not exist', undefined));
+            return;
+        }
 
         const result = {
             access: user.access,
@@ -88,9 +94,9 @@ export const post = async (email: string, pw: string, name: string): Promise<API
         // print log
         utility.print(`POST /user | email: ${email}`);
 
-        const addUserResultCode: number = await userDAO.createUser(email, pw, name);
+        const createUser: number = await userDAO.createUser(email, pw, name);
 
-        switch(addUserResultCode) {
+        switch(createUser) {
 
             case 101:
                 resolve(utility.result(101, 'OK', undefined));
@@ -121,10 +127,10 @@ export const getData = async (access: string): Promise<APIResult> => {
         // print log
         utility.print(`GET /user/data | access: ${access}`);
 
-        const user: User = await userDAO.getUserByAccess(access);
+        const user: User|null = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(user === undefined) {
+        if(user === null) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }
@@ -156,10 +162,10 @@ export const getImage = async (access: string): Promise<APIResult> => {
         // print log
         utility.print(`GET /user/image | access: ${access}`);
 
-        const user: User = await userDAO.getUserByAccess(access);
+        const user: User|null = await userDAO.getUserByAccess(access);
 
         // user exist check
-        if(user === undefined) {
+        if(user === null) {
             resolve(utility.result(201, 'User does not exist', undefined));
             return;
         }
@@ -172,7 +178,7 @@ export const getImage = async (access: string): Promise<APIResult> => {
             return;
         }
 
-        resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image!)));
+        resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
 
     });
 };

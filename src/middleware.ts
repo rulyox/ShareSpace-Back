@@ -1,20 +1,20 @@
 import express from 'express';
-import { userDAO } from './user';
+import { User, userDAO } from './user';
 import * as utility from './utility';
 
 export const authChecker = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
     const token = request.headers.token;
-    let user = null;
+    let userId: number|null = null;
 
     try {
 
         if(typeof token === 'string') {
 
-            const tokenResult: {auth: boolean, id?: number, email?: string, name?: string} = await userDAO.checkToken(token);
+            const user: User|null = await userDAO.checkToken(token);
 
             // auth check
-            if(tokenResult.auth) user = tokenResult.id;
+            if(user !== null) userId = user.id;
 
         }
 
@@ -25,7 +25,7 @@ export const authChecker = async (request: express.Request, response: express.Re
     }
 
     // save user id
-    response.locals.user = user;
+    response.locals.user = userId;
 
     next();
 
