@@ -37,29 +37,33 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
         // print log
         utility.print(`DELETE /post | user: ${userId}`);
 
-        const postAccessResult: {result: boolean, id?: number} = await postDAO.getPostFromAccess(access);
+        const postId: number = await postDAO.getPostFromAccess(access);
 
         // post exist check
-        if(!postAccessResult.result || postAccessResult.id === undefined) {
+        if(postId === undefined) {
             resolve(utility.result(201, 'Post does not exist', undefined));
             return;
         }
 
-        const postId = postAccessResult.id;
-        const post: Post = await postDAO.getPostData(postId);
+        const post: Post|null = await postDAO.getPostData(postId);
 
-        // get owner
-        const user: User|null = await userDAO.getUserByAccess(post.userAccess);
+        if(post !== null) {
 
-        if(user !== null && userId === user.id) {
+            if(userId === post.user.id) {
 
-            await postDAO.deletePost(postId);
+                await postDAO.deletePost(postId);
 
-            resolve(utility.result(101, 'OK', undefined));
+                resolve(utility.result(101, 'OK', undefined));
+
+            } else {
+
+                resolve(utility.result(202, 'No authorization', undefined));
+
+            }
 
         } else {
 
-            resolve(utility.result(202, 'No authorization', undefined));
+            resolve(utility.result(201, 'Post does not exist', undefined));
 
         }
 
@@ -82,23 +86,22 @@ export const getData = async (user: number, access: string): Promise<APIResult> 
         // print log
         utility.print(`GET /post/data | user: ${user} access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await postDAO.getPostFromAccess(access);
+        const postId: number = await postDAO.getPostFromAccess(access);
 
         // post exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(postId === undefined) {
             resolve(utility.result(201, 'Post does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-        const post: Post = await postDAO.getPostData(id);
+        const post: Post|null = await postDAO.getPostData(postId);
 
-        if(post !== undefined) {
+        if(post !== null) {
 
             const result = {
-                user: post.userAccess,
-                name: post.userName,
-                profile: post.userProfile,
+                user: post.user.access,
+                name: post.user.name,
+                profile: post.user.image,
                 text: post.text,
                 image: post.image
             };
@@ -130,27 +133,26 @@ export const getPreview = async (user: number, access: string): Promise<APIResul
         // print log
         utility.print(`GET /post/preview | user: ${user} access: ${access}`);
 
-        const accessResult: {result: boolean, id?: number} = await postDAO.getPostFromAccess(access);
+        const postId: number = await postDAO.getPostFromAccess(access);
 
         // post exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(postId === undefined) {
             resolve(utility.result(201, 'Post does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-        const post: Post = await postDAO.getPostData(id);
+        const post: Post| null = await postDAO.getPostData(postId);
 
-        if(post !== undefined) {
+        if(post !== null) {
 
             // create preview image from first image
             let previewImage: string|null = null;
             if(post.image !== undefined && post.image.length > 0) previewImage = post.image[0];
 
             const result = {
-                user: post.userAccess,
-                name: post.userName,
-                profile: post.userProfile,
+                user: post.user.access,
+                name: post.user.name,
+                profile: post.user.image,
                 text: post.text,
                 image: previewImage
             };
@@ -263,17 +265,15 @@ export const getImage = async (user: number, access: string, image: string): Pro
         // print log
         utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
 
-        const accessResult: {result: boolean, id?: number} = await postDAO.getPostFromAccess(access);
+        const postId: number = await postDAO.getPostFromAccess(access);
 
         // post exist check
-        if(!accessResult.result || accessResult.id === undefined) {
+        if(postId === undefined) {
             resolve(utility.result(201, 'Post does not exist', undefined));
             return;
         }
 
-        const id = accessResult.id;
-
-        const imageResult: boolean = await postDAO.checkImage(id, image);
+        const imageResult: boolean = await postDAO.checkImage(postId, image);
 
         if(imageResult) resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
         else resolve(utility.result(202, 'Image does not exist', undefined));

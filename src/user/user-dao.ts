@@ -176,7 +176,7 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
     });
 };
 
-export const addProfileImage = (user: number, image: any): Promise<void> => {
+export const addProfileImage = (user: number, image: any) => {
     return new Promise(async (resolve, reject) => {
 
         try {

@@ -1,14 +1,11 @@
 import path from 'path';
 import * as DB from '../mysql-manager';
+import { User } from '../user';
 import { Post, postSQL, postUtility } from '../post';
 import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
-/*
-Result Code
-101 : OK
-*/
-export const writePost = (user: number, text: string, imageList: any[]): Promise<number> => {
+export const writePost = (user: number, text: string, imageList: any[]) => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -17,8 +14,8 @@ export const writePost = (user: number, text: string, imageList: any[]): Promise
             const access: string = await postUtility.createRandomAccess();
 
             // add post to db
-            const postAddQuery = await DB.execute(postSQL.add(access, user, text));
-            const postId: number = postAddQuery.insertId;
+            const add = await DB.execute(postSQL.add(access, user, text));
+            const postId: number = add.insertId;
 
             for(const [index, image] of Object.entries(imageList)) {
 
@@ -33,17 +30,13 @@ export const writePost = (user: number, text: string, imageList: any[]): Promise
 
             }
 
-            resolve(101);
+            resolve();
 
         } catch(error) { reject(error); }
 
     });
 };
 
-/*
-Result Code
-101 : OK
-*/
 export const deletePost = (id: number) => {
     return new Promise(async (resolve, reject) => {
 
@@ -51,38 +44,39 @@ export const deletePost = (id: number) => {
 
             await DB.execute(postSQL.deleteById(id));
 
-            resolve(101);
+            resolve();
 
         } catch(error) { reject(error); }
 
     });
 };
 
-export const getPostData = (id: number): Promise<Post> => {
+export const getPostData = (id: number): Promise<Post|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
             // get data of a post
-            const postDataQuery: {user: number, access: string, name: string, profile: string, text: string, time: string}[] = (await DB.execute(postSQL.selectPostData(id)));
+            const selectById: {user: number, access: string, email: string, name: string, profile: string, text: string, time: string}[] = await DB.execute(postSQL.selectById(id));
 
-            if(postDataQuery.length === 1) {
+            if(selectById.length === 1) {
 
                 // get images of a post
-                const postImageQuery: {image: string}[] = await DB.execute(postSQL.selectPostImage(id));
+                const selectPostImage: {image: string}[] = await DB.execute(postSQL.selectPostImage(id));
 
                 // save image file name to list
                 const imageList = [];
-                for(const image of postImageQuery) imageList.push(image.image);
+                for(const image of selectPostImage) imageList.push(image.image);
 
-                const postData = postDataQuery[0];
-                const post = new Post(postData.access, postData.name, postData.profile, postData.text, postData.time, imageList);
+                const postData = selectById[0];
+                const user = new User(postData.user, postData.access, postData.email, postData.name, postData.profile);
+                const post = new Post(user, postData.text, postData.time, imageList);
 
                 resolve(post);
 
             } else { // if post does not exist
 
-                resolve(undefined);
+                resolve(null);
 
             }
 
@@ -91,25 +85,22 @@ export const getPostData = (id: number): Promise<Post> => {
     });
 };
 
-export const getPostFromAccess = (access: string): Promise<{result: boolean, id?: number}> => {
+export const getPostFromAccess = (access: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const getPostQuery = (await DB.execute(postSQL.selectIdByAccess(access)));
+            const selectIdByAccess = (await DB.execute(postSQL.selectIdByAccess(access)));
 
-            if(getPostQuery?.length === 0) { // if id does not exist
+            if(selectIdByAccess.length === 0) { // if id does not exist
 
-                resolve({ result: false });
+                resolve(undefined);
 
             } else {
 
-                const postData = getPostQuery[0];
+                const postData = selectIdByAccess[0];
 
-                resolve({
-                    result: true,
-                    id: postData?.id
-                });
+                resolve(postData.id);
 
             }
 
@@ -123,10 +114,10 @@ export const getFeed = (user: number, start: number, count: number): Promise<str
 
         try {
 
-            const feedQuery = await DB.execute(postSQL.selectFeedInRange(user, start, count));
+            const selectFeedInRange = await DB.execute(postSQL.selectFeedInRange(user, start, count));
 
             const postList = [];
-            for(const post of feedQuery) postList.push(post.access);
+            for(const post of selectFeedInRange) postList.push(post.access);
 
             resolve(postList);
 
@@ -141,8 +132,8 @@ export const getNumberOfPostByUser = (user: number): Promise<number> => {
         try {
 
             // get number of posts by user
-            const postCountQuery = (await DB.execute(postSQL.selectNumberOfPostByUser(user)))[0];
-            const postCount = postCountQuery.count;
+            const selectNumberOfPostByUser = await DB.execute(postSQL.selectNumberOfPostByUser(user));
+            const postCount = selectNumberOfPostByUser[0].count;
 
             resolve(postCount);
 
@@ -157,11 +148,11 @@ export const getPostByUser = (user: number, start: number, count: number): Promi
         try {
 
             // get post list by user
-            const postQuery: {access: string}[] = await DB.execute(postSQL.selectPostByUserInRange(user, start, count));
+            const selectPostByUserInRange: {access: string}[] = await DB.execute(postSQL.selectPostByUserInRange(user, start, count));
 
             // save post id to list
             const postList = [];
-            for(const post of postQuery) postList.push(post.access);
+            for(const post of selectPostByUserInRange) postList.push(post.access);
 
             resolve(postList);
 
@@ -176,9 +167,9 @@ export const checkImage = (post: number, image: string): Promise<boolean> => {
         try {
 
             // get data of a post
-            const imageQuery: {image: string}[] = (await DB.execute(postSQL.selectImageFile(post, image)));
+            const selectImageFile: {image: string}[] = (await DB.execute(postSQL.selectImageFile(post, image)));
 
-            if(imageQuery.length === 1) resolve(true);
+            if(selectImageFile.length === 1) resolve(true);
             else resolve(false);
 
         } catch(error) { reject(error); }

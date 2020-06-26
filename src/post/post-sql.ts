@@ -4,16 +4,24 @@ export const add = (access: string, user: number, text: string): string =>
     VALUES (NULL, "${access}", ${user}, "${text}", NULL)
     ;`;
 
+export const addImage = (post: number, image: string): string =>
+    `
+    INSERT INTO post_image
+    VALUES (NULL, ${post}, "${image}")
+    ;`;
+
 export const deleteById = (id: number): string =>
     `
     DELETE FROM post
     WHERE id = ${id}
     ;`;
 
-export const addImage = (post: number, image: string): string =>
+export const selectById = (id: number): string =>
     `
-    INSERT INTO post_image
-    VALUES (NULL, ${post}, "${image}")
+    SELECT user.id AS user, user.access AS access, user.email AS email, user.name AS name, user.image AS profile, post.text AS text, post.time AS time
+    FROM post, user
+    WHERE post.id = ${id}
+    AND post.user = user.id
     ;`;
 
 export const selectIdByAccess = (access: string): string =>
@@ -21,6 +29,20 @@ export const selectIdByAccess = (access: string): string =>
     SELECT id
     FROM post
     WHERE access = "${access}"
+    ;`;
+
+export const selectPostImage = (post: number): string =>
+    `
+    SELECT image
+    FROM post_image
+    WHERE post = ${post}
+    ;`;
+
+export const selectImageFile = (post: number, image: string): string =>
+    `
+    SELECT image
+    FROM post_image
+    WHERE post = ${post} AND image = "${image}"
     ;`;
 
 export const selectNumberOfPostByUser = (user: number): string =>
@@ -37,28 +59,6 @@ export const selectPostByUserInRange = (user: number, start: number, count: numb
     WHERE user = ${user}
     ORDER BY id DESC
     LIMIT ${start}, ${count}
-    ;`;
-
-export const selectPostData = (id: number): string =>
-    `
-    SELECT user.id AS user, user.access AS access, user.name AS name, user.image AS profile, post.text AS text, post.time AS time
-    FROM post, user
-    WHERE post.id = ${id}
-    AND post.user = user.id
-    ;`;
-
-export const selectPostImage = (post: number): string =>
-    `
-    SELECT image
-    FROM post_image
-    WHERE post = ${post}
-    ;`;
-
-export const selectImageFile = (post: number, image: string): string =>
-    `
-    SELECT image
-    FROM post_image
-    WHERE post = ${post} AND image = "${image}"
     ;`;
 
 export const selectFeedInRange = (user: number, start: number, count: number): string =>
