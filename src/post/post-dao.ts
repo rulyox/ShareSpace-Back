@@ -150,7 +150,7 @@ export const getPostByUser = (user: number, start: number, count: number): Promi
             // get post list by user
             const selectPostByUserInRange: {access: string}[] = await DB.execute(postSQL.selectPostByUserInRange(user, start, count));
 
-            // save post id to list
+            // save post access to list
             const postList = [];
             for(const post of selectPostByUserInRange) postList.push(post.access);
 
@@ -167,10 +167,57 @@ export const checkImage = (post: number, image: string): Promise<boolean> => {
         try {
 
             // get data of a post
-            const selectImageFile: {image: string}[] = (await DB.execute(postSQL.selectImageFile(post, image)));
+            const selectImageFile: {image: string}[] = await DB.execute(postSQL.selectImageFile(post, image));
 
             if(selectImageFile.length === 1) resolve(true);
             else resolve(false);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const like = (post: number, user: number): Promise<boolean> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            await DB.execute(postSQL.addLike(post, user));
+
+            resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const unLike = (post: number, user: number): Promise<boolean> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            await DB.execute(postSQL.deleteLike(post, user));
+
+            resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const getLike = (post: number): Promise<string[]> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // get users who liked post
+            const selectLike: {access: string}[] = await DB.execute(postSQL.selectLike(post));
+
+            // save user access to list
+            const userList = [];
+            for(const user of selectLike) userList.push(user.access);
+
+            resolve(userList);
 
         } catch(error) { reject(error); }
 

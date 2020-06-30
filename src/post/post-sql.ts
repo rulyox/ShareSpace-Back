@@ -68,3 +68,23 @@ export const selectFeedInRange = (user: number, start: number, count: number): s
     WHERE user = ${user}
     LIMIT ${start}, ${count}
     ;`;
+
+export const addLike = (post: number, user: number): string =>
+    `
+    INSERT INTO post_like
+    VALUES (${post}, ${user})
+    ;`;
+
+export const deleteLike = (post: number, user: number): string =>
+    `
+    DELETE FROM post_like
+    WHERE post = ${post} AND user = ${user}
+    ;`;
+
+export const selectLike = (post: number): string =>
+    `
+    SELECT user.access
+    FROM post_like, user
+    WHERE post_like.post = ${post}
+    AND post_like.user = user.id
+    ;`;
