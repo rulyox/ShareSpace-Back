@@ -280,3 +280,68 @@ export const getImage = async (user: number, access: string, image: string): Pro
 
     });
 };
+
+/*
+Get likes of post.
+
+Response JSON Result
+{user: string[]}
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const getLike = async (user: number, access: string): Promise<APIResult> => {
+    return new Promise(async (resolve) => {
+
+        // print log
+        utility.print(`GET /like | user: ${user} access: ${access}`);
+
+        const postId: number = await postDAO.getPostFromAccess(access);
+
+        // post exist check
+        if(postId === undefined) {
+            resolve(utility.result(201, 'Post does not exist', undefined));
+            return;
+        }
+
+        const userList: string[] = await postDAO.getLike(postId);
+
+        const result = {
+            user: userList
+        };
+
+        resolve(utility.result(101, 'OK', result));
+
+    });
+};
+
+
+/*
+Like post.
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const postLike = async (user: number, access: string, type: boolean): Promise<APIResult> => {
+    return new Promise(async (resolve) => {
+
+        // print log
+        utility.print(`POST /like | user: ${user} access: ${access}`);
+
+        const postId: number = await postDAO.getPostFromAccess(access);
+
+        // post exist check
+        if(postId === undefined) {
+            resolve(utility.result(201, 'Post does not exist', undefined));
+            return;
+        }
+
+        if(type) await postDAO.like(postId, user);
+        else await postDAO.unLike(postId, user);
+
+        resolve(utility.result(101, 'OK', undefined));
+
+    });
+};

@@ -24,4 +24,10 @@ router.get('/user/:access', postController.getUser);
 // Get image file.
 router.get('/image/:access/:image', postController.getImage);
 
+// Get likes of post.
+router.get('/like/:access', postController.getLike);
+
+// Like post.
+router.post('/like/:access', postController.postLike);
+
 export default router;

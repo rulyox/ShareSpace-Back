@@ -243,3 +243,74 @@ image file
 201 : Post does not exist
 202 : Image does not exist
 ```
+
+## GET /post/like/:access
+
+Get likes of post.
+
+* Request Header
+```
+token : string
+```
+  
+* Request Param
+```
+access : string
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
+  "user": "string[]"
+}
+```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+```
+
+## POST /post/like/:access
+
+Like post.
+
+* Request Header
+```
+token : string
+```
+  
+* Request Param
+```
+access : string
+```
+
+* Request Body JSON
+```json
+{
+  "type": "boolean"
+}
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string"
+}
+```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+```

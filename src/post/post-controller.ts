@@ -327,3 +327,98 @@ export const getImage = async (request: express.Request, response: express.Respo
     } catch(error) { next(error); }
 
 };
+
+/*
+Get likes of post.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
+{user: string[]}
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const getLike = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const access = request.params.access;
+
+        // type check
+        if(access === null) {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.getLike(user, access);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+Like post.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Request Body JSON
+{type: boolean}
+
+Response JSON
+{code: number, message: string}
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const postLike = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const access = request.params.access;
+        const type = request.body.type;
+
+        // type check
+        if(access === null || typeof type !== 'boolean') {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.postLike(user, access, type);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
