@@ -1,7 +1,7 @@
 import path from 'path';
 import * as DB from '../mysql-manager';
 import { User } from '../user';
-import { Post, postSQL, postUtility } from '../post';
+import { Post, Comment, postSQL, postUtility } from '../post';
 import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -177,7 +177,7 @@ export const checkImage = (post: number, image: string): Promise<boolean> => {
     });
 };
 
-export const like = (post: number, user: number): Promise<boolean> => {
+export const like = (post: number, user: number): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -191,7 +191,7 @@ export const like = (post: number, user: number): Promise<boolean> => {
     });
 };
 
-export const unLike = (post: number, user: number): Promise<boolean> => {
+export const unLike = (post: number, user: number): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -218,6 +218,51 @@ export const getLike = (post: number): Promise<string[]> => {
             for(const user of selectLike) userList.push(user.access);
 
             resolve(userList);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const writeComment = (post: number, user: number, comment: string): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            await DB.execute(postSQL.addComment(post, user, comment));
+
+            resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const deleteComment = (id: number): Promise<void> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            await DB.execute(postSQL.deleteComment(id));
+
+            resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const getComment = (post: number): Promise<Comment[]> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const selectComment: {id: number, access: string, comment: string, time: string}[] = await DB.execute(postSQL.selectComment(post));
+
+            const commentList = [];
+            for(const comment of selectComment) commentList.push(new Comment(comment.id, comment.access, comment.comment, comment.time));
+
+            resolve(commentList);
 
         } catch(error) { reject(error); }
 

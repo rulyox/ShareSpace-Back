@@ -88,3 +88,23 @@ export const selectLike = (post: number): string =>
     WHERE post_like.post = ${post}
     AND post_like.user = user.id
     ;`;
+
+export const addComment = (post: number, user: number, comment: string): string =>
+    `
+    INSERT INTO post_comment
+    VALUES (NULL, ${post}, ${user}, "${comment}", NULL)
+    ;`;
+
+export const deleteComment = (id: number): string =>
+    `
+    DELETE FROM post_comment
+    WHERE id = ${id}
+    ;`;
+
+export const selectComment = (post: number): string =>
+    `
+    SELECT post_comment.id, user.access, post_comment.comment, post_comment.time
+    FROM post_comment, user
+    WHERE post_comment.post = ${post}
+    AND post_comment.user = user.id
+    ;`;

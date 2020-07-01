@@ -47,3 +47,51 @@ export class Post {
     }
 
 }
+
+export class Comment {
+
+    private _id: number;
+    private _access: string;
+    private _comment: string;
+    private _time: string;
+
+    constructor(id: number, access: string, comment: string, time: string) {
+        this._id = id;
+        this._access = access;
+        this._comment = comment;
+        this._time = time;
+    }
+
+    get id(): number {
+        return this._id;
+    }
+
+    set id(value: number) {
+        this._id = value;
+    }
+
+    get access(): string {
+        return this._access;
+    }
+
+    set access(value: string) {
+        this._access = value;
+    }
+
+    get comment(): string {
+        return this._comment;
+    }
+
+    set comment(value: string) {
+        this._comment = value;
+    }
+
+    get time(): string {
+        return this._time;
+    }
+
+    set time(value: string) {
+        this._time = value;
+    }
+
+}
