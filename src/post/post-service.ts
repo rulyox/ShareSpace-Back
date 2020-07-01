@@ -11,14 +11,18 @@ Response Code
 101 : OK
 */
 export const post = async (user: number, formData: {text: string, images: object[]}): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`POST /post | user: ${user} file: ${formData.images.length}`);
+        try {
 
-        await postDAO.writePost(user, formData.text, formData.images);
+            // print log
+            utility.print(`POST /post | user: ${user} file: ${formData.images.length}`);
 
-        resolve(utility.result(101, 'OK', undefined));
+            await postDAO.writePost(user, formData.text, formData.images);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -32,40 +36,44 @@ Response Code
 202 : No authorization
 */
 export const deletePost = async (userId: number, access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`DELETE /post | user: ${userId}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`DELETE /post | user: ${userId}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        const post: Post|null = await postDAO.getPostData(postId);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        if(post !== null) {
+            const post: Post|null = await postDAO.getPostData(postId);
 
-            if(userId === post.user.id) {
+            if(post !== null) {
 
-                await postDAO.deletePost(postId);
+                if(userId === post.user.id) {
 
-                resolve(utility.result(101, 'OK', undefined));
+                    await postDAO.deletePost(postId);
+
+                    resolve(utility.result(101, 'OK', undefined));
+
+                } else {
+
+                    resolve(utility.result(202, 'No authorization', undefined));
+
+                }
 
             } else {
 
-                resolve(utility.result(202, 'No authorization', undefined));
+                resolve(utility.result(201, 'Post does not exist', undefined));
 
             }
 
-        } else {
-
-            resolve(utility.result(201, 'Post does not exist', undefined));
-
-        }
+        } catch(error) { reject(error); }
 
     });
 };
@@ -81,38 +89,42 @@ Response Code
 201 : Post does not exist
 */
 export const getData = async (user: number, access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /post/data | user: ${user} access: ${access}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`GET /post/data | user: ${user} access: ${access}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        const post: Post|null = await postDAO.getPostData(postId);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        if(post !== null) {
+            const post: Post|null = await postDAO.getPostData(postId);
 
-            const result = {
-                user: post.user.access,
-                name: post.user.name,
-                profile: post.user.image,
-                text: post.text,
-                image: post.image
-            };
+            if(post !== null) {
 
-            resolve(utility.result(101, 'OK', result));
+                const result = {
+                    user: post.user.access,
+                    name: post.user.name,
+                    profile: post.user.image,
+                    text: post.text,
+                    image: post.image
+                };
 
-        } else {
+                resolve(utility.result(101, 'OK', result));
 
-            resolve(utility.result(201, 'Post does not exist', undefined));
+            } else {
 
-        }
+                resolve(utility.result(201, 'Post does not exist', undefined));
+
+            }
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -128,42 +140,46 @@ Response Code
 201 : Post does not exist
 */
 export const getPreview = async (user: number, access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /post/preview | user: ${user} access: ${access}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`GET /post/preview | user: ${user} access: ${access}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        const post: Post| null = await postDAO.getPostData(postId);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        if(post !== null) {
+            const post: Post| null = await postDAO.getPostData(postId);
 
-            // create preview image from first image
-            let previewImage: string|null = null;
-            if(post.image !== undefined && post.image.length > 0) previewImage = post.image[0];
+            if(post !== null) {
 
-            const result = {
-                user: post.user.access,
-                name: post.user.name,
-                profile: post.user.image,
-                text: post.text,
-                image: previewImage
-            };
+                // create preview image from first image
+                let previewImage: string|null = null;
+                if(post.image !== undefined && post.image.length > 0) previewImage = post.image[0];
 
-            resolve(utility.result(101, 'OK', result));
+                const result = {
+                    user: post.user.access,
+                    name: post.user.name,
+                    profile: post.user.image,
+                    text: post.text,
+                    image: previewImage
+                };
 
-        } else {
+                resolve(utility.result(101, 'OK', result));
 
-            resolve(utility.result(201, 'Post does not exist', undefined));
+            } else {
 
-        }
+                resolve(utility.result(201, 'Post does not exist', undefined));
+
+            }
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -178,18 +194,22 @@ Response Code
 101 : OK
 */
 export const getFeed = async (user: number, start: number, count: number): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /post/feed | user: ${user}`);
+        try {
 
-        const feedData: string[] = await postDAO.getFeed(user, start, count);
+            // print log
+            utility.print(`GET /post/feed | user: ${user}`);
 
-        const result = {
-            post: feedData
-        };
+            const feedData: string[] = await postDAO.getFeed(user, start, count);
 
-        resolve(utility.result(101, 'OK', result));
+            const result = {
+                post: feedData
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -206,44 +226,48 @@ Response Code
 201 : Wrong range
 */
 export const getUser = async (userId: number, access: string, start: number, count: number): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /post/user | user: ${userId} start: ${start} count: ${count}`);
+        try {
 
-        const user: User|null = await userDAO.getUserByAccess(access);
+            // print log
+            utility.print(`GET /post/user | user: ${userId} start: ${start} count: ${count}`);
 
-        // user exist check
-        if(user === null) {
-            resolve(utility.result(201, 'User does not exist', undefined));
-            return;
-        }
+            const user: User|null = await userDAO.getUserByAccess(access);
 
-        // get number of posts by user
-        const postCount = await postDAO.getNumberOfPostByUser(userId);
+            // user exist check
+            if(user === null) {
+                resolve(utility.result(201, 'User does not exist', undefined));
+                return;
+            }
 
-        // start should be 0 from postCount-1
-        if(start >= 0 && start < postCount) {
+            // get number of posts by user
+            const postCount = await postDAO.getNumberOfPostByUser(userId);
 
-            // get post list by user
-            const postList: string[] = await postDAO.getPostByUser(userId, start, count);
+            // start should be 0 from postCount-1
+            if(start >= 0 && start < postCount) {
 
-            const result = {
-                total: postCount,
-                list: postList
-            };
+                // get post list by user
+                const postList: string[] = await postDAO.getPostByUser(userId, start, count);
 
-            resolve(utility.result(101, 'OK', result));
+                const result = {
+                    total: postCount,
+                    list: postList
+                };
 
-        } else {
+                resolve(utility.result(101, 'OK', result));
 
-            const result = {
-                total: postCount
-            };
+            } else {
 
-            resolve(utility.result(202, 'Wrong range', result));
+                const result = {
+                    total: postCount
+                };
 
-        }
+                resolve(utility.result(202, 'Wrong range', result));
+
+            }
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -260,23 +284,27 @@ Response Code
 202 : Image does not exist
 */
 export const getImage = async (user: number, access: string, image: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        const imageResult: boolean = await postDAO.checkImage(postId, image);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        if(imageResult) resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
-        else resolve(utility.result(202, 'Image does not exist', undefined));
+            const imageResult: boolean = await postDAO.checkImage(postId, image);
+
+            if(imageResult) resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
+            else resolve(utility.result(202, 'Image does not exist', undefined));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -292,26 +320,30 @@ Response Code
 201 : Post does not exist
 */
 export const getLike = async (user: number, access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /like | user: ${user} access: ${access}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`GET /like | user: ${user} access: ${access}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        const userList: string[] = await postDAO.getLike(postId);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        const result = {
-            user: userList
-        };
+            const userList: string[] = await postDAO.getLike(postId);
 
-        resolve(utility.result(101, 'OK', result));
+            const result = {
+                user: userList
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -325,23 +357,27 @@ Response Code
 201 : Post does not exist
 */
 export const postLike = async (user: number, access: string, type: boolean): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`POST /like | user: ${user} access: ${access}`);
+        try {
 
-        const postId: number = await postDAO.getPostFromAccess(access);
+            // print log
+            utility.print(`POST /like | user: ${user} access: ${access}`);
 
-        // post exist check
-        if(postId === undefined) {
-            resolve(utility.result(201, 'Post does not exist', undefined));
-            return;
-        }
+            const postId: number = await postDAO.getPostFromAccess(access);
 
-        if(type) await postDAO.like(postId, user);
-        else await postDAO.unLike(postId, user);
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
 
-        resolve(utility.result(101, 'OK', undefined));
+            if(type) await postDAO.like(postId, user);
+            else await postDAO.unLike(postId, user);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
 
     });
 };

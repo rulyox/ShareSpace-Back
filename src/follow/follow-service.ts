@@ -13,26 +13,30 @@ Response Code
 201 : User does not exist
 */
 export const getFollowing = async (access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /user/follow/ing | access: ${access}`);
+        try {
 
-        const user: User|null = await userDAO.getUserByAccess(access);
+            // print log
+            utility.print(`GET /user/follow/ing | access: ${access}`);
 
-        // user exist check
-        if(user === null) {
-            resolve(utility.result(201, 'User does not exist', undefined));
-            return;
-        }
+            const user: User|null = await userDAO.getUserByAccess(access);
 
-        const followingList: string[] = await followDAO.getFollowingList(user.id);
+            // user exist check
+            if(user === null) {
+                resolve(utility.result(201, 'User does not exist', undefined));
+                return;
+            }
 
-        const result = {
-            user: followingList
-        };
+            const followingList: string[] = await followDAO.getFollowingList(user.id);
 
-        resolve(utility.result(101, 'OK', result));
+            const result = {
+                user: followingList
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -48,26 +52,30 @@ Response Code
 201 : User does not exist
 */
 export const getFollower = async (access: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /user/follow/er | access: ${access}`);
+        try {
 
-        const user: User|null = await userDAO.getUserByAccess(access);
+            // print log
+            utility.print(`GET /user/follow/er | access: ${access}`);
 
-        // user exist check
-        if(user === null) {
-            resolve(utility.result(201, 'User does not exist', undefined));
-            return;
-        }
+            const user: User|null = await userDAO.getUserByAccess(access);
 
-        const followerList: string[] = await followDAO.getFollowerList(user.id);
+            // user exist check
+            if(user === null) {
+                resolve(utility.result(201, 'User does not exist', undefined));
+                return;
+            }
 
-        const result = {
-            user: followerList
-        };
+            const followerList: string[] = await followDAO.getFollowerList(user.id);
 
-        resolve(utility.result(101, 'OK', result));
+            const result = {
+                user: followerList
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -83,27 +91,31 @@ Response Code
 201 : User does not exist
 */
 export const getCheck = async (followerAccess: string, followingAccess: string): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`GET /check | follower: ${followerAccess} following: ${followingAccess}`);
+        try {
 
-        const follower: User|null = await userDAO.getUserByAccess(followerAccess);
-        const following: User|null = await userDAO.getUserByAccess(followingAccess);
+            // print log
+            utility.print(`GET /check | follower: ${followerAccess} following: ${followingAccess}`);
 
-        // user exist check
-        if(follower === null || following === null) {
-            resolve(utility.result(201, 'User does not exist', undefined));
-            return;
-        }
+            const follower: User|null = await userDAO.getUserByAccess(followerAccess);
+            const following: User|null = await userDAO.getUserByAccess(followingAccess);
 
-        const isFollowing: boolean = await followDAO.checkFollowing(follower.id, following.id);
+            // user exist check
+            if(follower === null || following === null) {
+                resolve(utility.result(201, 'User does not exist', undefined));
+                return;
+            }
 
-        const result = {
-            following: isFollowing
-        };
+            const isFollowing: boolean = await followDAO.checkFollowing(follower.id, following.id);
 
-        resolve(utility.result(101, 'OK', result));
+            const result = {
+                following: isFollowing
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
 
     });
 };
@@ -116,23 +128,27 @@ Response Code
 201 : User does not exist
 */
 export const post = async (userId: number, access: string, type: boolean): Promise<APIResult> => {
-    return new Promise(async (resolve) => {
+    return new Promise(async (resolve, reject) => {
 
-        // print log
-        utility.print(`POST /user/follow | user: ${userId} access: ${access}`);
+        try {
 
-        const user: User|null = await userDAO.getUserByAccess(access);
+            // print log
+            utility.print(`POST /user/follow | user: ${userId} access: ${access}`);
 
-        // user exist check
-        if(user === null) {
-            resolve(utility.result(201, 'User does not exist', undefined));
-            return;
-        }
+            const user: User|null = await userDAO.getUserByAccess(access);
 
-        if(type) await followDAO.follow(userId, user.id);
-        else await followDAO.unFollow(userId, user.id);
+            // user exist check
+            if(user === null) {
+                resolve(utility.result(201, 'User does not exist', undefined));
+                return;
+            }
 
-        resolve(utility.result(101, 'OK', undefined));
+            if(type) await followDAO.follow(userId, user.id);
+            else await followDAO.unFollow(userId, user.id);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
 
     });
 };
