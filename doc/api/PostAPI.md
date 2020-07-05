@@ -252,7 +252,7 @@ Get likes of post.
 ```
 token : string
 ```
-  
+
 * Request Param
 ```
 access : string
@@ -288,7 +288,7 @@ Like post.
 ```
 token : string
 ```
-  
+
 * Request Param
 ```
 access : string
@@ -313,4 +313,102 @@ access : string
 ```
 101 : OK
 201 : Post does not exist
+```
+
+## GET /post/comment/:access
+
+Get comments of post.
+
+* Request Header
+```
+token : string
+```
+
+* Request Param
+```
+access : string
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+{
+  "comment": "{ user: string, comment: string, time: string }[]"
+}
+```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+```
+
+## POST /post/comment/:access
+
+Write comment.
+
+* Request Header
+```
+token : string
+```
+
+* Request Param
+```
+access : string
+```
+
+* Request Body JSON
+```json
+{
+  "comment": "string"
+}
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string"
+}
+```
+
+* Response Code
+```
+101 : OK
+201 : Post does not exist
+```
+
+## DELETE /post/comment/:id
+
+Delete comment.
+
+* Request Header
+```
+token : string
+```
+
+* Request Param
+```
+id : number
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string"
+}
+```
+
+* Response Code
+```
+101 : OK
 ```

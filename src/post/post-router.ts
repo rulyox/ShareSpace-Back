@@ -30,4 +30,13 @@ router.get('/like/:access', postController.getLike);
 // Like post.
 router.post('/like/:access', postController.postLike);
 
+// Get comments of post.
+router.get('/comment/:access', postController.getComment);
+
+// Write comment.
+router.post('/comment/:access', postController.postComment);
+
+// Delete comment.
+router.delete('/comment/:id', postController.deleteComment);
+
 export default router;

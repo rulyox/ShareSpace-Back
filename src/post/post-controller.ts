@@ -422,3 +422,141 @@ export const postLike = async (request: express.Request, response: express.Respo
     } catch(error) { next(error); }
 
 };
+
+/*
+Get comments of post.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
+{comment: { user: string, comment: string, time: string }[]}
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const getComment = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const access = request.params.access;
+
+        // type check
+        if(access === null) {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.getComment(user, access);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+Write comment.
+
+Request Header
+token : string
+
+Request Param
+access : string
+
+Request Body JSON
+{comment: string}
+
+Response JSON
+{code: number, message: string}
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const postComment = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const access = request.params.access;
+        const comment = request.body.comment;
+
+        // type check
+        if(access === null || typeof comment !== 'string') {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.postComment(user, access, comment);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
+
+/*
+Delete comment.
+
+Request Header
+token : string
+
+Request Param
+id : number
+
+Response JSON
+{code: number, message: string}
+
+Response Code
+101 : OK
+*/
+export const deleteComment = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const id = Number(request.params.id);
+
+        // type check
+        if(isNaN(id)) {
+            response.status(400).end();
+            return;
+        }
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await postService.deleteComment(user, id);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};

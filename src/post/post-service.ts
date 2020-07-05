@@ -1,6 +1,6 @@
 import path from 'path';
 import { User, userDAO } from '../user';
-import { Post, postDAO } from '../post';
+import { Post, Comment, postDAO } from '../post';
 import * as utility from '../utility';
 import dataConfig from '../../config/data.json';
 
@@ -374,6 +374,108 @@ export const postLike = async (user: number, access: string, type: boolean): Pro
 
             if(type) await postDAO.like(postId, user);
             else await postDAO.unLike(postId, user);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+/*
+Get comments of post.
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const getComment = async (user: number, access: string): Promise<APIResult> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // print log
+            utility.print(`GET /comment | user: ${user} access: ${access}`);
+
+            const postId: number = await postDAO.getPostFromAccess(access);
+
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
+
+            const getComment: Comment[] = await postDAO.getComment(postId);
+            const commentList = [];
+
+            for(const comment of getComment) {
+
+                commentList.push({
+                    user: comment.access,
+                    comment: comment.comment,
+                    time: comment.time
+                });
+
+            }
+
+            const result = {
+                comment: commentList
+            };
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+/*
+Write comment.
+
+Response Code
+101 : OK
+201 : Post does not exist
+*/
+export const postComment = async (user: number, access: string, comment: string): Promise<APIResult> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // print log
+            utility.print(`POST /comment | user: ${user} access: ${access}`);
+
+            const postId: number = await postDAO.getPostFromAccess(access);
+
+            // post exist check
+            if(postId === undefined) {
+                resolve(utility.result(201, 'Post does not exist', undefined));
+                return;
+            }
+
+            await postDAO.writeComment(postId, user, comment);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+/*
+Delete comment.
+
+Response Code
+101 : OK
+*/
+export const deleteComment = async (user: number, id: number): Promise<APIResult> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // print log
+            utility.print(`DELETE /comment | user: ${user} id: ${id}`);
+
+            await postDAO.deleteComment(id);
 
             resolve(utility.result(101, 'OK', undefined));
 
