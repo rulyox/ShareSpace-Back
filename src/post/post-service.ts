@@ -242,13 +242,13 @@ export const getUser = async (userId: number, access: string, start: number, cou
             }
 
             // get number of posts by user
-            const postCount = await postDAO.getNumberOfPostByUser(userId);
+            const postCount = await postDAO.getNumberOfPostByUser(user.id);
 
             // start should be 0 from postCount-1
             if(start >= 0 && start < postCount) {
 
                 // get post list by user
-                const postList: string[] = await postDAO.getPostByUser(userId, start, count);
+                const postList: string[] = await postDAO.getPostByUser(user.id, start, count);
 
                 const result = {
                     total: postCount,
