@@ -411,6 +411,7 @@ export const getComment = async (user: number, access: string): Promise<APIResul
             for(const comment of getComment) {
 
                 commentList.push({
+                    id: comment.id,
                     user: comment.access,
                     comment: comment.comment,
                     time: comment.time
