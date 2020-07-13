@@ -45,3 +45,10 @@ export const addProfileImage = (id: number, image: string): string =>
     SET image = "${image}"
     WHERE id = ${id}
     ;`;
+
+export const selectByQuery = (query: string): string =>
+    `
+    SELECT *
+    FROM user
+    WHERE name LIKE "%${query}%"
+    ;`;

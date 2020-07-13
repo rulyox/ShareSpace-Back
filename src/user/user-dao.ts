@@ -120,7 +120,7 @@ export const getUserByAccess = (access: string): Promise<User|null> => {
 
         try {
 
-            const selectByAccess = (await DB.execute(userSQL.selectByAccess(access)));
+            const selectByAccess = await DB.execute(userSQL.selectByAccess(access));
 
             if(selectByAccess.length === 0) { // if access does not exist
 
@@ -191,6 +191,29 @@ export const addProfileImage = (user: number, image: any) => {
             await DB.execute(userSQL.addProfileImage(user, imageName));
 
             resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const searchUser = (query: string): Promise<User[]> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const selectByQuery = await DB.execute(userSQL.selectByQuery(query));
+
+            const userList: User[] = [];
+
+            for(const item of selectByQuery) {
+
+                const user = new User(item.id, item.access, item.email, item.name, item.image);
+                userList.push(user);
+
+            }
+
+            resolve(userList)
 
         } catch(error) { reject(error); }
 

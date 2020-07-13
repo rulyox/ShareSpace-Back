@@ -21,4 +21,7 @@ router.get('/image/:access', userController.getImage);
 // Add profile image.
 router.post('/image', userController.postImage);
 
+// Search user.
+router.get('/search/:query', userController.getSearch);
+
 export default router;

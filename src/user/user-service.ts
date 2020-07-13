@@ -225,3 +225,38 @@ export const postImage = async (user: number, formData: {image: object}): Promis
 
     });
 };
+
+/*
+Search user.
+
+Response JSON Result
+{access: string, name: string, image: string}[]
+*/
+export const getSearch = async (query: string): Promise<APIResult> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // print log
+            utility.print(`GET /user/search | query: ${query}`);
+
+            const userList: User[] = await userDAO.searchUser(query);
+
+            const result: {access: string, name: string, image: string}[] = [];
+
+            for(const user of userList) {
+
+                result.push({
+                    access: user.access,
+                    name: user.name,
+                    image: user.image
+                });
+
+            }
+
+            resolve(utility.result(101, 'OK', result));
+
+        } catch(error) { reject(error); }
+
+    });
+};

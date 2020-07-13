@@ -174,3 +174,37 @@ files
 ```
 101 : OK
 ```
+
+## GET /user/search/:query
+
+Search user.
+
+* Request Param
+```
+query : string
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string",
+  "result": "json"
+}
+```
+
+* Response JSON Result
+```json
+[
+  {
+    "access": "string",
+    "name": "string",
+    "image": "string"
+  }
+]
+```
+
+* Response Code
+```
+101 : OK
+```

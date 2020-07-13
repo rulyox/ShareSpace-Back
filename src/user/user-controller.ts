@@ -222,3 +222,39 @@ export const postImage = async (request: express.Request, response: express.Resp
     } catch(error) { next(error); }
 
 };
+
+/*
+Search user.
+
+Request Param
+query : string
+
+Response JSON
+{code: number, message: string, result: json}
+
+Response JSON Result
+{access: string, name: string, image: string}[]
+
+Response Code
+101 : OK
+*/
+export const getSearch = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const query = request.params.query;
+
+        // type check
+        if(query === null) {
+            response.status(400).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await userService.getSearch(query);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
