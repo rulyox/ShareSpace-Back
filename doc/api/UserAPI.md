@@ -4,6 +4,8 @@
 
 Check login and create token.
 
+A token is valid for a week.
+
 * Request Body JSON
 ```json
 {

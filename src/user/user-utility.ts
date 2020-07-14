@@ -9,7 +9,8 @@ export const createToken = (email: string, pw: string): string => {
 
     const credential = {
         email: email,
-        pw: pw
+        pw: pw,
+        time: new Date().getTime()
     };
 
     return encryptAES(JSON.stringify(credential));

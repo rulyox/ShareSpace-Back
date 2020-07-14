@@ -43,8 +43,18 @@ export const checkToken = (token: string): Promise<User|null> => {
             // type check
             const email = credential.email;
             const pw = credential.pw;
+            const time = credential.time;
 
-            if(typeof email !== 'string' || typeof pw !== 'string') {
+            if(typeof email !== 'string' || typeof pw !== 'string' || typeof time !== 'number') {
+                resolve(null);
+                return;
+            }
+
+            // check valid time
+            const currentTime = new Date().getTime();
+            const validTime = time + (1000 * 60 * 60 * 24 * 7); // 1 week
+
+            if(currentTime > validTime) {
                 resolve(null);
                 return;
             }
