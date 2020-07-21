@@ -22,9 +22,9 @@ export const postToken = async (email: string, pw: string): Promise<APIResult> =
             // print log
             utility.print(`POST /user/token | email: ${email}`);
 
-            const checkLogin: number = await userDAO.checkLogin(email, pw);
+            const resultCode: number = await userDAO.checkLogin(email, pw);
 
-            switch(checkLogin) {
+            switch(resultCode) {
 
                 case 101:
                     const token: string = userUtility.createToken(email, pw);
@@ -69,7 +69,7 @@ export const get = async (userId: number): Promise<APIResult> => {
             // print log
             utility.print(`GET /user | user: ${userId}`);
 
-            const user: User|null = await userDAO.getUserById(userId);
+            const user: User|null = await userDAO.get(userId);
 
             if(user === null) {
                 resolve(utility.result(201, 'User does not exist', undefined));
@@ -104,9 +104,9 @@ export const post = async (email: string, pw: string, name: string): Promise<API
             // print log
             utility.print(`POST /user | email: ${email}`);
 
-            const createUser: number = await userDAO.createUser(email, pw, name);
+            const resultCode: number = await userDAO.create(email, pw, name);
 
-            switch(createUser) {
+            switch(resultCode) {
 
                 case 101:
                     resolve(utility.result(101, 'OK', undefined));
@@ -141,7 +141,7 @@ export const getData = async (access: string): Promise<APIResult> => {
             // print log
             utility.print(`GET /user/data | access: ${access}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
@@ -180,7 +180,7 @@ export const getImage = async (access: string): Promise<APIResult> => {
             // print log
             utility.print(`GET /user/image | access: ${access}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
@@ -217,7 +217,7 @@ export const postImage = async (user: number, formData: {image: object}): Promis
             // print log
             utility.print(`POST /user/image | user: ${user}`);
 
-            await userDAO.addProfileImage(user, formData.image);
+            await userDAO.addImage(user, formData.image);
 
             resolve(utility.result(101, 'OK', undefined));
 

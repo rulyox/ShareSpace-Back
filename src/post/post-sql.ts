@@ -1,21 +1,3 @@
-export const add = (access: string, user: number, text: string): string =>
-    `
-    INSERT INTO post
-    VALUES (NULL, "${access}", ${user}, "${text}", NULL)
-    ;`;
-
-export const addImage = (post: number, image: string): string =>
-    `
-    INSERT INTO post_image
-    VALUES (NULL, ${post}, "${image}")
-    ;`;
-
-export const deleteById = (id: number): string =>
-    `
-    DELETE FROM post
-    WHERE id = ${id}
-    ;`;
-
 export const selectById = (id: number): string =>
     `
     SELECT user.id AS user, user.access AS access, user.email AS email, user.name AS name, user.image AS profile, post.text AS text, post.time AS time
@@ -29,20 +11,6 @@ export const selectIdByAccess = (access: string): string =>
     SELECT id
     FROM post
     WHERE access = "${access}"
-    ;`;
-
-export const selectPostImage = (post: number): string =>
-    `
-    SELECT image
-    FROM post_image
-    WHERE post = ${post}
-    ;`;
-
-export const selectImageFile = (post: number, image: string): string =>
-    `
-    SELECT image
-    FROM post_image
-    WHERE post = ${post} AND image = "${image}"
     ;`;
 
 export const selectNumberOfPostByUser = (user: number): string =>
@@ -67,6 +35,38 @@ export const selectFeedInRange = (user: number, start: number, count: number): s
     FROM feed
     WHERE user = ${user}
     LIMIT ${start}, ${count}
+    ;`;
+
+export const add = (access: string, user: number, text: string): string =>
+    `
+    INSERT INTO post
+    VALUES (NULL, "${access}", ${user}, "${text}", NULL)
+    ;`;
+
+export const addImage = (post: number, image: string): string =>
+    `
+    INSERT INTO post_image
+    VALUES (NULL, ${post}, "${image}")
+    ;`;
+
+export const deleteById = (id: number): string =>
+    `
+    DELETE FROM post
+    WHERE id = ${id}
+    ;`;
+
+export const selectImage = (post: number): string =>
+    `
+    SELECT image
+    FROM post_image
+    WHERE post = ${post}
+    ;`;
+
+export const checkImage = (post: number, image: string): string =>
+    `
+    SELECT image
+    FROM post_image
+    WHERE post = ${post} AND image = "${image}"
     ;`;
 
 export const addLike = (post: number, user: number): string =>

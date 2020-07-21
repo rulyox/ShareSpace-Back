@@ -43,7 +43,7 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
             // print log
             utility.print(`DELETE /post | user: ${userId}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -51,7 +51,7 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
                 return;
             }
 
-            const post: Post|null = await postDAO.getPostData(postId);
+            const post: Post|null = await postDAO.get(postId);
 
             if(post !== null) {
 
@@ -96,7 +96,7 @@ export const getData = async (user: number, access: string): Promise<APIResult> 
             // print log
             utility.print(`GET /post/data | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -104,7 +104,7 @@ export const getData = async (user: number, access: string): Promise<APIResult> 
                 return;
             }
 
-            const post: Post|null = await postDAO.getPostData(postId);
+            const post: Post|null = await postDAO.get(postId);
 
             if(post !== null) {
 
@@ -147,7 +147,7 @@ export const getPreview = async (user: number, access: string): Promise<APIResul
             // print log
             utility.print(`GET /post/preview | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -155,7 +155,7 @@ export const getPreview = async (user: number, access: string): Promise<APIResul
                 return;
             }
 
-            const post: Post| null = await postDAO.getPostData(postId);
+            const post: Post| null = await postDAO.get(postId);
 
             if(post !== null) {
 
@@ -233,7 +233,7 @@ export const getUser = async (userId: number, access: string, start: number, cou
             // print log
             utility.print(`GET /post/user | user: ${userId} start: ${start} count: ${count}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
@@ -291,7 +291,7 @@ export const getImage = async (user: number, access: string, image: string): Pro
             // print log
             utility.print(`GET /post/image | user: ${user} access: ${access} image: ${image}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -327,7 +327,7 @@ export const getLike = async (user: number, access: string): Promise<APIResult> 
             // print log
             utility.print(`GET /like | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -364,7 +364,7 @@ export const postLike = async (user: number, access: string, type: boolean): Pro
             // print log
             utility.print(`POST /like | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -397,7 +397,7 @@ export const getComment = async (user: number, access: string): Promise<APIResul
             // print log
             utility.print(`GET /comment | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {
@@ -445,7 +445,7 @@ export const postComment = async (user: number, access: string, comment: string)
             // print log
             utility.print(`POST /comment | user: ${user} access: ${access}`);
 
-            const postId: number = await postDAO.getPostFromAccess(access);
+            const postId: number = await postDAO.getIdFromAccess(access);
 
             // post exist check
             if(postId === undefined) {

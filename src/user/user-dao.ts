@@ -100,20 +100,20 @@ export const getHashedPassword = (email: string, pw: string): Promise<string> =>
     });
 };
 
-export const getUserById = (id: number): Promise<User|null> => {
+export const get = (id: number): Promise<User|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const selectByID = (await DB.execute(userSQL.selectByID(id)));
+            const selectById = (await DB.execute(userSQL.selectById(id)));
 
-            if(selectByID.length === 0) { // if id does not exist
+            if(selectById.length === 0) { // if id does not exist
 
                 resolve(null);
 
             } else {
 
-                const userData = selectByID[0];
+                const userData = selectById[0];
 
                 const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
                 resolve(user);
@@ -125,7 +125,7 @@ export const getUserById = (id: number): Promise<User|null> => {
     });
 };
 
-export const getUserByAccess = (access: string): Promise<User|null> => {
+export const getByAccess = (access: string): Promise<User|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -155,7 +155,7 @@ Result Code
 101 : OK
 201 : Email exists
 */
-export const createUser = (email: string, pw: string, name: string): Promise<number> => {
+export const create = (email: string, pw: string, name: string): Promise<number> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -186,7 +186,7 @@ export const createUser = (email: string, pw: string, name: string): Promise<num
     });
 };
 
-export const addProfileImage = (user: number, image: any) => {
+export const addImage = (user: number, image: any) => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -198,7 +198,7 @@ export const addProfileImage = (user: number, image: any) => {
             await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
 
             // add image to db
-            await DB.execute(userSQL.addProfileImage(user, imageName));
+            await DB.execute(userSQL.addImage(user, imageName));
 
             resolve();
 

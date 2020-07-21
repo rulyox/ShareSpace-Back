@@ -20,7 +20,7 @@ export const getFollowing = async (access: string): Promise<APIResult> => {
             // print log
             utility.print(`GET /user/follow/ing | access: ${access}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
@@ -59,7 +59,7 @@ export const getFollower = async (access: string): Promise<APIResult> => {
             // print log
             utility.print(`GET /user/follow/er | access: ${access}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
@@ -98,8 +98,8 @@ export const getCheck = async (followerAccess: string, followingAccess: string):
             // print log
             utility.print(`GET /check | follower: ${followerAccess} following: ${followingAccess}`);
 
-            const follower: User|null = await userDAO.getUserByAccess(followerAccess);
-            const following: User|null = await userDAO.getUserByAccess(followingAccess);
+            const follower: User|null = await userDAO.getByAccess(followerAccess);
+            const following: User|null = await userDAO.getByAccess(followingAccess);
 
             // user exist check
             if(follower === null || following === null) {
@@ -135,7 +135,7 @@ export const post = async (userId: number, access: string, type: boolean): Promi
             // print log
             utility.print(`POST /user/follow | user: ${userId} access: ${access}`);
 
-            const user: User|null = await userDAO.getUserByAccess(access);
+            const user: User|null = await userDAO.getByAccess(access);
 
             // user exist check
             if(user === null) {
