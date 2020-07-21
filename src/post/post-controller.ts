@@ -292,11 +292,6 @@ image: string
 
 Response
 image file
-
-Response Code
-101 : OK
-201 : Post does not exist
-202 : Image does not exist
 */
 export const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -320,9 +315,9 @@ export const getImage = async (request: express.Request, response: express.Respo
         }
 
         // response
-        const result: APIResult = await postService.getImage(user, access, image);
-        if(result.code === 101) response.sendFile(result.result);
-        else response.json(result);
+        const result: string|null = await postService.getImage(user, access, image);
+        if(result === null) response.status(404).end();
+        else response.sendFile(result);
 
     } catch(error) { next(error); }
 

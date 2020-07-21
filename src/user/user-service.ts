@@ -166,13 +166,8 @@ Get profile image.
 
 Response
 image file
-
-Response Code
-101 : OK
-201 : User does not exist
-202 : No profile image
 */
-export const getImage = async (access: string): Promise<APIResult> => {
+export const getImage = async (access: string): Promise<string|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -184,7 +179,7 @@ export const getImage = async (access: string): Promise<APIResult> => {
 
             // user exist check
             if(user === null) {
-                resolve(utility.result(201, 'User does not exist', undefined));
+                resolve(null);
                 return;
             }
 
@@ -192,11 +187,11 @@ export const getImage = async (access: string): Promise<APIResult> => {
 
             // no profile image
             if(image === null) {
-                resolve(utility.result(202, 'No profile image', undefined));
+                resolve(null);
                 return;
             }
 
-            resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
+            resolve(path.join(__dirname, '../../../', dataConfig.imageDir, image));
 
         } catch(error) { reject(error); }
 

@@ -138,16 +138,9 @@ Get profile image.
 access : string
 ```
 
-Response
+* Response
 ```
 image file
-```
-
-* Response Code
-```
-101 : OK
-201 : User does not exist
-202 : No profile image
 ```
 
 ## POST /user/image

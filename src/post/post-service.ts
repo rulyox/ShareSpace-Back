@@ -277,13 +277,8 @@ Get image file.
 
 Response
 image file
-
-Response Code
-101 : OK
-201 : Post does not exist
-202 : Image does not exist
 */
-export const getImage = async (user: number, access: string, image: string): Promise<APIResult> => {
+export const getImage = async (user: number, access: string, image: string): Promise<string|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -295,14 +290,14 @@ export const getImage = async (user: number, access: string, image: string): Pro
 
             // post exist check
             if(postId === undefined) {
-                resolve(utility.result(201, 'Post does not exist', undefined));
+                resolve(null);
                 return;
             }
 
             const imageResult: boolean = await postDAO.checkImage(postId, image);
 
-            if(imageResult) resolve(utility.result(101, 'OK', path.join(__dirname, '../../../', dataConfig.imageDir, image)));
-            else resolve(utility.result(202, 'Image does not exist', undefined));
+            if(imageResult) resolve(path.join(__dirname, '../../../', dataConfig.imageDir, image));
+            else resolve(null);
 
         } catch(error) { reject(error); }
 

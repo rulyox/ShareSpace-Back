@@ -221,27 +221,20 @@ count : number
 
 Get image file.
 
-Request Header
+* Request Header
 ```
 token : string
 ```
 
-Request Param
+* Request Param
 ```
 access : string
 image: string
 ```
 
-Response
+* Response
 ```
 image file
-```
-
-* Response Code
-```
-101 : OK
-201 : Post does not exist
-202 : Image does not exist
 ```
 
 ## GET /post/like/:access

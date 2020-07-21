@@ -158,11 +158,6 @@ access : string
 
 Response
 image file
-
-Response Code
-101 : OK
-201 : User does not exist
-202 : No profile image
 */
 export const getImage = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -178,9 +173,9 @@ export const getImage = async (request: express.Request, response: express.Respo
         }
 
         // response
-        const result: APIResult = await userService.getImage(access);
-        if(result.code === 101) response.sendFile(result.result);
-        else response.json(result);
+        const result: string|null = await userService.getImage(access);
+        if(result === null) response.status(404).end();
+        else response.sendFile(result);
 
     } catch(error) { next(error); }
 
