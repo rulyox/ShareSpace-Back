@@ -113,7 +113,7 @@ export const post = async (email: string, pw: string, name: string): Promise<API
                     break;
 
                 case 201:
-                    resolve(utility.result(101, 'Email exists', undefined));
+                    resolve(utility.result(201, 'Email exists', undefined));
                     break;
 
             }
