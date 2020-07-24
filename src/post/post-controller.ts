@@ -97,7 +97,7 @@ Response JSON
 {code: number, message: string, result: json}
 
 Response JSON Result
-{user: string, name: string, profile: string, text: string, image: string[]}
+{user: string, name: string, profile: string, text: string, image: string[], time: string}
 
 Response Code
 101 : OK

@@ -1,6 +1,6 @@
 export const selectById = (id: number): string =>
     `
-    SELECT user.id AS user, user.access AS access, user.email AS email, user.name AS name, user.image AS profile, post.text AS text, post.time AS time
+    SELECT user.id AS user, user.access AS access, user.email AS email, user.name AS name, user.image AS profile, post.text AS text, DATE_FORMAT(post.time, '%Y. %m. %d. %H:%i') AS time
     FROM post, user
     WHERE post.id = ${id}
     AND post.user = user.id
@@ -103,7 +103,7 @@ export const deleteComment = (id: number): string =>
 
 export const selectComment = (post: number): string =>
     `
-    SELECT post_comment.id, user.access, post_comment.comment, post_comment.time
+    SELECT post_comment.id, user.access, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time
     FROM post_comment, user
     WHERE post_comment.post = ${post}
     AND post_comment.user = user.id

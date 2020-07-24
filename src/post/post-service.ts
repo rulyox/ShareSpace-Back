@@ -82,7 +82,7 @@ export const deletePost = async (userId: number, access: string): Promise<APIRes
 Get post data.
 
 Response JSON Result
-{user: string, name: string, profile: string, text: string, image: string[]}
+{user: string, name: string, profile: string, text: string, image: string[], time: string}
 
 Response Code
 101 : OK
@@ -113,7 +113,8 @@ export const getData = async (user: number, access: string): Promise<APIResult> 
                     name: post.user.name,
                     profile: post.user.image,
                     text: post.text,
-                    image: post.image
+                    image: post.image,
+                    time: post.time
                 };
 
                 resolve(utility.result(101, 'OK', result));
