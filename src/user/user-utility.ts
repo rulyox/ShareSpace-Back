@@ -80,7 +80,7 @@ export const parseForm = (request: express.Request): Promise<{image: object}> =>
     });
 };
 
-export const createRandomAccess = (): Promise<string> => {
+export const createUserRandomAccess = (): Promise<string> => {
     return new Promise(async (resolve, reject) => {
 
         try {

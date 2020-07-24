@@ -37,6 +37,6 @@ router.get('/comment/:access', postController.getComment);
 router.post('/comment/:access', postController.postComment);
 
 // Delete comment.
-router.delete('/comment/:id', postController.deleteComment);
+router.delete('/comment/:access', postController.deleteComment);
 
 export default router;

@@ -431,7 +431,7 @@ Response JSON
 {code: number, message: string, result: json}
 
 Response JSON Result
-{comment: { user: string, comment: string, time: string }[]}
+{comment: { access: string, user: string, comment: string, time: string }[]}
 
 Response Code
 101 : OK
@@ -520,13 +520,15 @@ Request Header
 token : string
 
 Request Param
-id : number
+access : string
 
 Response JSON
 {code: number, message: string}
 
 Response Code
 101 : OK
+201 : Comment does not exist
+202 : No authorization
 */
 export const deleteComment = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
 
@@ -534,10 +536,10 @@ export const deleteComment = async (request: express.Request, response: express.
 
         // parse request
         const user = response.locals.user;
-        const id = Number(request.params.id);
+        const access = request.params.access;
 
         // type check
-        if(isNaN(id)) {
+        if(access === null) {
             response.status(400).end();
             return;
         }
@@ -549,7 +551,7 @@ export const deleteComment = async (request: express.Request, response: express.
         }
 
         // response
-        const result: APIResult = await postService.deleteComment(user, id);
+        const result: APIResult = await postService.deleteComment(user, access);
         response.json(result);
 
     } catch(error) { next(error); }

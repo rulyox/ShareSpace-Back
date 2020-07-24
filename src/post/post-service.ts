@@ -401,14 +401,14 @@ export const getComment = async (user: number, access: string): Promise<APIResul
                 return;
             }
 
-            const getComment: Comment[] = await postDAO.getComment(postId);
+            const getCommentByPost: Comment[] = await postDAO.getCommentByPost(postId);
             const commentList = [];
 
-            for(const comment of getComment) {
+            for(const comment of getCommentByPost) {
 
                 commentList.push({
-                    id: comment.id,
-                    user: comment.access,
+                    access: comment.access,
+                    user: comment.user,
                     comment: comment.comment,
                     time: comment.time
                 });
@@ -463,18 +463,40 @@ Delete comment.
 
 Response Code
 101 : OK
+201 : Comment does not exist
+202 : No authorization
 */
-export const deleteComment = async (user: number, id: number): Promise<APIResult> => {
+export const deleteComment = async (userId: number, access: string): Promise<APIResult> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
             // print log
-            utility.print(`DELETE /comment | user: ${user} id: ${id}`);
+            utility.print(`DELETE /comment | user: ${userId} access: ${access}`);
 
-            await postDAO.deleteComment(id);
+            const comment: Comment|null = await postDAO.getComment(access);
 
-            resolve(utility.result(101, 'OK', undefined));
+            const user: User|null = await userDAO.get(userId);
+
+            if(comment !== null) {
+
+                if(user?.access === comment.user) {
+
+                    await postDAO.deleteComment(access);
+
+                    resolve(utility.result(101, 'OK', undefined));
+
+                } else {
+
+                    resolve(utility.result(202, 'No authorization', undefined));
+
+                }
+
+            } else {
+
+                resolve(utility.result(201, 'Comment does not exist', undefined));
+
+            }
 
         } catch(error) { reject(error); }
 

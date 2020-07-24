@@ -52,12 +52,14 @@ export class Comment {
 
     private _id: number;
     private _access: string;
+    private _user: string;
     private _comment: string;
     private _time: string;
 
-    constructor(id: number, access: string, comment: string, time: string) {
+    constructor(id: number, access: string, user:string, comment: string, time: string) {
         this._id = id;
         this._access = access;
+        this._user = user;
         this._comment = comment;
         this._time = time;
     }
@@ -76,6 +78,14 @@ export class Comment {
 
     set access(value: string) {
         this._access = value;
+    }
+
+    get user(): string {
+        return this._user;
+    }
+
+    set user(value: string) {
+        this._user = value;
     }
 
     get comment(): string {

@@ -335,7 +335,7 @@ access : string
 * Response JSON Result
 ```json
 {
-  "comment": "{ user: string, comment: string, time: string }[]"
+  "comment": "{ access: string, user: string, comment: string, time: string }[]"
 }
 ```
 
@@ -380,7 +380,7 @@ access : string
 201 : Post does not exist
 ```
 
-## DELETE /post/comment/:id
+## DELETE /post/comment/:access
 
 Delete comment.
 
@@ -391,7 +391,7 @@ token : string
 
 * Request Param
 ```
-id : number
+access : string
 ```
 
 * Response JSON
@@ -405,4 +405,6 @@ id : number
 * Response Code
 ```
 101 : OK
+201 : Comment does not exist
+202 : No authorization
 ```

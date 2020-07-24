@@ -166,7 +166,7 @@ export const create = (email: string, pw: string, name: string): Promise<number>
             if(checkEmail.length === 0) {
 
                 // generate random access key
-                const access: string = await userUtility.createRandomAccess();
+                const access: string = await userUtility.createUserRandomAccess();
 
                 // generate salt for hashing
                 const salt = userUtility.createRandomSalt();

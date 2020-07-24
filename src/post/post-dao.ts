@@ -121,7 +121,7 @@ export const writePost = (user: number, text: string, imageList: any[]) => {
         try {
 
             // generate random access key
-            const access: string = await postUtility.createRandomAccess();
+            const access: string = await postUtility.createPostRandomAccess();
 
             // add post to db
             const add = await DB.execute(postSQL.add(access, user, text));
@@ -229,7 +229,10 @@ export const writeComment = (post: number, user: number, comment: string): Promi
 
         try {
 
-            await DB.execute(postSQL.addComment(post, user, comment));
+            // generate random access key
+            const access: string = await postUtility.createCommentRandomAccess();
+
+            await DB.execute(postSQL.addComment(access, post, user, comment));
 
             resolve();
 
@@ -238,12 +241,12 @@ export const writeComment = (post: number, user: number, comment: string): Promi
     });
 };
 
-export const deleteComment = (id: number): Promise<void> => {
+export const deleteComment = (access: string): Promise<void> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            await DB.execute(postSQL.deleteComment(id));
+            await DB.execute(postSQL.deleteComment(access));
 
             resolve();
 
@@ -252,15 +255,41 @@ export const deleteComment = (id: number): Promise<void> => {
     });
 };
 
-export const getComment = (post: number): Promise<Comment[]> => {
+export const getComment = (access: string): Promise<Comment|null> => {
     return new Promise(async (resolve, reject) => {
 
         try {
 
-            const selectComment: {id: number, access: string, comment: string, time: string}[] = await DB.execute(postSQL.selectComment(post));
+            // get data of a post
+            const selectCommentById: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.execute(postSQL.selectCommentByAccess(access));
+
+            if(selectCommentById.length === 1) {
+
+                const commentData = selectCommentById[0];
+                const comment = new Comment(commentData.id, commentData.access, commentData.user, commentData.comment, commentData.time)
+
+                resolve(comment);
+
+            } else { // if post does not exist
+
+                resolve(null);
+
+            }
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const getCommentByPost = (post: number): Promise<Comment[]> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            const selectComment: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.execute(postSQL.selectCommentByPost(post));
 
             const commentList = [];
-            for(const comment of selectComment) commentList.push(new Comment(comment.id, comment.access, comment.comment, comment.time));
+            for(const comment of selectComment) commentList.push(new Comment(comment.id, comment.access, comment.user, comment.comment, comment.time));
 
             resolve(commentList);
 

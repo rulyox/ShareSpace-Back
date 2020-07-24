@@ -34,7 +34,7 @@ export const parseForm = (request: express.Request): Promise<{text: string, imag
     });
 };
 
-export const createRandomAccess = (): Promise<string> => {
+export const createPostRandomAccess = (): Promise<string> => {
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -48,6 +48,30 @@ export const createRandomAccess = (): Promise<string> => {
                 access = 'p' + random.toString('hex');
 
                 getAccessQuery = (await DB.execute(postSQL.selectIdByAccess(access)));
+
+            } while(getAccessQuery.length !== 0);
+
+            resolve(access);
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+export const createCommentRandomAccess = (): Promise<string> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            let access;
+            let getAccessQuery;
+
+            do {
+
+                const random = crypto.randomBytes(10);
+                access = 'c' + random.toString('hex');
+
+                getAccessQuery = (await DB.execute(postSQL.selectCommentByAccess(access)));
 
             } while(getAccessQuery.length !== 0);
 

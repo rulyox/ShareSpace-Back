@@ -90,22 +90,31 @@ export const selectLike = (post: number): string =>
     WHERE post_like.post_id = ${post}
     ;`;
 
-export const addComment = (post: number, user: number, comment: string): string =>
+export const addComment = (access: string, post: number, user: number, comment: string): string =>
     `
     INSERT INTO post_comment
-    VALUES (NULL, ${post}, ${user}, "${comment}", NULL)
+    VALUES (NULL, "${access}", ${post}, ${user}, "${comment}", NULL)
     ;`;
 
-export const deleteComment = (id: number): string =>
+export const deleteComment = (access: string): string =>
     `
     DELETE FROM post_comment
-    WHERE id = ${id}
+    WHERE access = "${access}"
     ;`;
 
-export const selectComment = (post: number): string =>
+export const selectCommentByAccess = (access: string): string =>
     `
-    SELECT post_comment.id, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time,
-        users.access
+    SELECT post_comment.id, post_comment.access, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time,
+        users.access AS user
+    FROM post_comment
+        INNER JOIN users ON users.id = post_comment.user_id
+    WHERE post_comment.access = "${access}"
+    ;`;
+
+export const selectCommentByPost = (post: number): string =>
+    `
+    SELECT post_comment.id, post_comment.access, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time,
+        users.access AS user
     FROM post_comment
         INNER JOIN users ON users.id = post_comment.user_id
     WHERE post_comment.post_id = ${post}
