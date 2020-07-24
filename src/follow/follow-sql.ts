@@ -1,24 +1,24 @@
 export const selectFollowing = (id: number): string =>
     `
-    SELECT user.access AS access
-    FROM follow, user
-    WHERE follow.follower = ${id}
-    AND user.id = follow.following
+    SELECT users.access AS access
+    FROM follow
+        INNER JOIN users ON users.id = follow.following_id
+    WHERE follow.follower_id = ${id}
     ;`;
 
 export const selectFollower = (id: number): string =>
     `
-    SELECT user.access AS access
-    FROM follow, user
-    WHERE follow.following = ${id}
-    AND user.id = follow.follower
+    SELECT users.access AS access
+    FROM follow
+        INNER JOIN users ON users.id = follow.follower_id
+    WHERE follow.following_id = ${id}
     ;`;
 
 export const checkFollowing = (follower: number, following: number): string =>
     `
-    SELECT following
+    SELECT following_id
     FROM follow
-    WHERE follower = ${follower} AND following = ${following}
+    WHERE follower_id = ${follower} AND following_id = ${following}
     ;`;
 
 export const addFollow = (follower: number, following: number): string =>
@@ -30,5 +30,5 @@ export const addFollow = (follower: number, following: number): string =>
 export const deleteFollow = (follower: number, following: number): string =>
     `
     DELETE FROM follow
-    WHERE follower = "${follower}" AND following = "${following}"
+    WHERE follower_id = "${follower}" AND following_id = "${following}"
     ;`;

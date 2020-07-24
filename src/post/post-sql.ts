@@ -1,9 +1,10 @@
 export const selectById = (id: number): string =>
     `
-    SELECT user.id AS user, user.access AS access, user.email AS email, user.name AS name, user.image AS profile, post.text AS text, DATE_FORMAT(post.time, '%Y. %m. %d. %H:%i') AS time
-    FROM post, user
+    SELECT users.id AS user, users.access AS access, users.email AS email, users.name AS name, users.image AS profile,
+        post.text AS text, DATE_FORMAT(post.time, '%Y. %m. %d. %H:%i') AS time
+    FROM post
+        INNER JOIN users ON users.id = post.user_id
     WHERE post.id = ${id}
-    AND post.user = user.id
     ;`;
 
 export const selectIdByAccess = (access: string): string =>
@@ -17,14 +18,14 @@ export const selectNumberOfPostByUser = (user: number): string =>
     `
     SELECT COUNT(*) as count
     FROM post
-    WHERE user = ${user}
+    WHERE user_id = ${user}
     ;`;
 
 export const selectPostByUserInRange = (user: number, start: number, count: number): string =>
     `
     SELECT access
     FROM post
-    WHERE user = ${user}
+    WHERE user_id = ${user}
     ORDER BY id DESC
     LIMIT ${start}, ${count}
     ;`;
@@ -33,7 +34,7 @@ export const selectFeedInRange = (user: number, start: number, count: number): s
     `
     SELECT access
     FROM feed
-    WHERE user = ${user}
+    WHERE user_id = ${user}
     LIMIT ${start}, ${count}
     ;`;
 
@@ -59,14 +60,14 @@ export const selectImage = (post: number): string =>
     `
     SELECT image
     FROM post_image
-    WHERE post = ${post}
+    WHERE post_id = ${post}
     ;`;
 
 export const checkImage = (post: number, image: string): string =>
     `
     SELECT image
     FROM post_image
-    WHERE post = ${post} AND image = "${image}"
+    WHERE post_id = ${post} AND image = "${image}"
     ;`;
 
 export const addLike = (post: number, user: number): string =>
@@ -78,15 +79,15 @@ export const addLike = (post: number, user: number): string =>
 export const deleteLike = (post: number, user: number): string =>
     `
     DELETE FROM post_like
-    WHERE post = ${post} AND user = ${user}
+    WHERE post_id = ${post} AND user_id = ${user}
     ;`;
 
 export const selectLike = (post: number): string =>
     `
-    SELECT user.access
-    FROM post_like, user
-    WHERE post_like.post = ${post}
-    AND post_like.user = user.id
+    SELECT users.access
+    FROM post_like
+        INNER JOIN users ON users.id = post_like.user_id
+    WHERE post_like.post_id = ${post}
     ;`;
 
 export const addComment = (post: number, user: number, comment: string): string =>
@@ -103,8 +104,9 @@ export const deleteComment = (id: number): string =>
 
 export const selectComment = (post: number): string =>
     `
-    SELECT post_comment.id, user.access, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time
-    FROM post_comment, user
-    WHERE post_comment.post = ${post}
-    AND post_comment.user = user.id
+    SELECT post_comment.id, post_comment.comment, DATE_FORMAT(post_comment.time, '%Y. %m. %d. %H:%i') AS time,
+        users.access
+    FROM post_comment
+        INNER JOIN users ON users.id = post_comment.user_id
+    WHERE post_comment.post_id = ${post}
     ;`;
