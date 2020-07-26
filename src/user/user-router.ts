@@ -12,6 +12,9 @@ router.get('/', userController.get);
 // Sign up.
 router.post('/', userController.post);
 
+// Change user data.
+router.put('/', userController.put);
+
 // Get user data.
 router.get('/data/:access', userController.getData);
 

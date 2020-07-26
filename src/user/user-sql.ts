@@ -46,6 +46,13 @@ export const add = (access: string, email: string, pw: string, salt: string, nam
     VALUES (NULL, "${access}", "${email}", "${pw}", "${salt}", "${name}", NULL)
     ;`;
 
+export const update = (id: number, name: string, pw: string, salt: string): string =>
+    `
+    UPDATE users
+    SET name = "${name}", pw = "${pw}", salt = "${salt}"
+    WHERE id = ${id}
+    ;`;
+
 export const addImage = (id: number, image: string): string =>
     `
     UPDATE users

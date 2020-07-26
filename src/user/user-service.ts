@@ -124,6 +124,29 @@ export const post = async (email: string, pw: string, name: string): Promise<API
 };
 
 /*
+Change user data.
+
+Response Code
+101 : OK
+*/
+export const put = async (user: number, name: string, pw: string): Promise<APIResult> => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // print log
+            utility.print(`PUT /user | user: ${user} name: ${name}`);
+
+            await userDAO.edit(user, name, pw);
+
+            resolve(utility.result(101, 'OK', undefined));
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
+/*
 Get user data.
 
 Response JSON Result

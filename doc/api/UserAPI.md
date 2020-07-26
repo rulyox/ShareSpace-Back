@@ -97,6 +97,36 @@ Sign up.
 201 : Email exists
 ```
 
+## PUT /user
+
+Change user data.
+
+* Request Header
+```
+token : string
+```
+
+* Request Body JSON
+```json
+{
+  "name": "string",
+  "pw": "string"
+}
+```
+
+* Response JSON
+```json
+{
+  "code": "number",
+  "message": "string"
+}
+```
+
+* Response Code
+```
+101 : OK
+```
+
 ## GET /user/data/:access
 
 Get user data.

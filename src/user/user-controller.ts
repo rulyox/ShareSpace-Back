@@ -114,6 +114,50 @@ export const post = async (request: express.Request, response: express.Response,
 };
 
 /*
+Change user data.
+
+Request Header
+token : string
+
+Request Body JSON
+{name: string, pw: string}
+
+Response JSON
+{code: number, message: string}
+
+Response Code
+101 : OK
+*/
+export const put = async (request: express.Request, response: express.Response, next: express.NextFunction) => {
+
+    try {
+
+        // parse request
+        const user = response.locals.user;
+        const name = request.body.name;
+        const pw = request.body.pw;
+
+        // auth check
+        if(user === null) {
+            response.status(401).end();
+            return;
+        }
+
+        // type check
+        if(typeof name !== 'string' || typeof pw !== 'string') {
+            response.status(400).end();
+            return;
+        }
+
+        // response
+        const result: APIResult = await userService.put(user, name, pw);
+        response.json(result);
+
+    } catch(error) { next(error); }
+
+};
+
+/*
 Get user data.
 
 Request Param

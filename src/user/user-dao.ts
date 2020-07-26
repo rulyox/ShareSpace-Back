@@ -186,6 +186,26 @@ export const create = (email: string, pw: string, name: string): Promise<number>
     });
 };
 
+export const edit = (user: number, name: string, pw: string) => {
+    return new Promise(async (resolve, reject) => {
+
+        try {
+
+            // generate salt for hashing
+            const salt = userUtility.createRandomSalt();
+
+            // generate hashed password
+            pw = userUtility.hash(pw, salt);
+
+            await DB.execute(userSQL.update(user, name, pw, salt));
+
+            resolve();
+
+        } catch(error) { reject(error); }
+
+    });
+};
+
 export const addImage = (user: number, image: any) => {
     return new Promise(async (resolve, reject) => {
 
