@@ -20,7 +20,7 @@ export const checkLogin = (email: string, pw: string): Promise<number> => {
 
             if(hashedPassword !== undefined) {
 
-                const selectByEmailPw = await DB.execute(userSQL.selectByEmailPw(email, hashedPassword));
+                const selectByEmailPw = await DB.run(userSQL.selectByEmailPw(email, hashedPassword));
 
                 if(selectByEmailPw.length === 1) resolve(101);
                 else resolve(202);
@@ -66,7 +66,7 @@ export const checkToken = (token: string): Promise<User|null> => {
                 // hash password
                 const hashedPassword: string = await getHashedPassword(email, pw);
 
-                const selectByEmailPw = await DB.execute(userSQL.selectByEmailPw(email, hashedPassword));
+                const selectByEmailPw = await DB.run(userSQL.selectByEmailPw(email, hashedPassword));
                 const userData = selectByEmailPw[0];
 
                 const user = new User(userData.id, userData.access, userData.email, userData.name, userData.image);
@@ -84,7 +84,7 @@ export const getHashedPassword = (email: string, pw: string): Promise<string> =>
 
         try {
 
-            const selectSaltByEmail = await DB.execute(userSQL.selectSaltByEmail(email));
+            const selectSaltByEmail = await DB.run(userSQL.selectSaltByEmail(email));
 
             if(selectSaltByEmail.length === 1) {
 
@@ -105,7 +105,7 @@ export const get = (id: number): Promise<User|null> => {
 
         try {
 
-            const selectById = (await DB.execute(userSQL.selectById(id)));
+            const selectById = (await DB.run(userSQL.selectById(id)));
 
             if(selectById.length === 0) { // if id does not exist
 
@@ -130,7 +130,7 @@ export const getByAccess = (access: string): Promise<User|null> => {
 
         try {
 
-            const selectByAccess = await DB.execute(userSQL.selectByAccess(access));
+            const selectByAccess = await DB.run(userSQL.selectByAccess(access));
 
             if(selectByAccess.length === 0) { // if access does not exist
 
@@ -161,7 +161,7 @@ export const create = (email: string, pw: string, name: string): Promise<number>
         try {
 
             // check if same email exists
-            const checkEmail = await DB.execute(userSQL.checkEmail(email));
+            const checkEmail = await DB.run(userSQL.checkEmail(email));
 
             if(checkEmail.length === 0) {
 
@@ -174,7 +174,7 @@ export const create = (email: string, pw: string, name: string): Promise<number>
                 // generate hashed password
                 pw = userUtility.hash(pw, salt);
 
-                const add = await DB.execute(userSQL.add(access, email, pw, salt, name));
+                const add = await DB.run(userSQL.add(access, email, pw, salt, name));
 
                 if(add.affectedRows === 1) resolve(101);
                 else reject('User Add Failed')
@@ -197,7 +197,7 @@ export const edit = (user: number, name: string, pw: string) => {
             // generate hashed password
             pw = userUtility.hash(pw, salt);
 
-            await DB.execute(userSQL.update(user, name, pw, salt));
+            await DB.run(userSQL.update(user, name, pw, salt));
 
             resolve();
 
@@ -218,7 +218,7 @@ export const addImage = (user: number, image: any) => {
             await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
 
             // add image to db
-            await DB.execute(userSQL.addImage(user, imageName));
+            await DB.run(userSQL.addImage(user, imageName));
 
             resolve();
 
@@ -232,7 +232,7 @@ export const searchUser = (query: string): Promise<User[]> => {
 
         try {
 
-            const selectByQuery = await DB.execute(userSQL.selectByQuery(query));
+            const selectByQuery = await DB.run(userSQL.selectByQuery(query));
 
             const userList: User[] = [];
 

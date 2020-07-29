@@ -1,13 +1,9 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import api from './src/api';
-import * as DB from './src/mysql-manager';
 import * as middleware from './src/middleware';
 import * as utility from './src/utility';
 import serverConfig from './config/server.json';
-
-// database
-DB.start();
 
 // express app
 const app = express();

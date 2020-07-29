@@ -6,7 +6,7 @@ export const getFollowingList = (user: number): Promise<string[]> => {
 
         try {
 
-            const selectFollowing = await DB.execute(followSQL.selectFollowing(user));
+            const selectFollowing = await DB.run(followSQL.selectFollowing(user));
 
             const followingList = [];
             for(const following of selectFollowing) followingList.push(following.access);
@@ -23,7 +23,7 @@ export const getFollowerList = (user: number): Promise<string[]> => {
 
         try {
 
-            const selectFollower = await DB.execute(followSQL.selectFollower(user));
+            const selectFollower = await DB.run(followSQL.selectFollower(user));
 
             const followerList = [];
             for(const follower of selectFollower) followerList.push(follower.access);
@@ -40,7 +40,7 @@ export const checkFollowing = (follower: number, following: number): Promise<boo
 
         try {
 
-            const checkFollowing = await DB.execute(followSQL.checkFollowing(follower, following));
+            const checkFollowing = await DB.run(followSQL.checkFollowing(follower, following));
 
             if(checkFollowing.length === 1) resolve(true);
             else resolve(false);
@@ -55,7 +55,7 @@ export const follow = (follower: number, following: number): Promise<void> => {
 
         try {
 
-            await DB.execute(followSQL.addFollow(follower, following));
+            await DB.run(followSQL.addFollow(follower, following));
 
             resolve();
 
@@ -69,7 +69,7 @@ export const unFollow = (follower: number, following: number): Promise<void> => 
 
         try {
 
-            await DB.execute(followSQL.deleteFollow(follower, following));
+            await DB.run(followSQL.deleteFollow(follower, following));
 
             resolve();
 

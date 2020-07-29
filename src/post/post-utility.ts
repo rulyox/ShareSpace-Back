@@ -47,7 +47,7 @@ export const createPostRandomAccess = (): Promise<string> => {
                 const random = crypto.randomBytes(10);
                 access = 'p' + random.toString('hex');
 
-                getAccessQuery = (await DB.execute(postSQL.selectIdByAccess(access)));
+                getAccessQuery = await DB.run(postSQL.selectIdByAccess(access));
 
             } while(getAccessQuery.length !== 0);
 
@@ -71,7 +71,7 @@ export const createCommentRandomAccess = (): Promise<string> => {
                 const random = crypto.randomBytes(10);
                 access = 'c' + random.toString('hex');
 
-                getAccessQuery = (await DB.execute(postSQL.selectCommentByAccess(access)));
+                getAccessQuery = await DB.run(postSQL.selectCommentByAccess(access));
 
             } while(getAccessQuery.length !== 0);
 

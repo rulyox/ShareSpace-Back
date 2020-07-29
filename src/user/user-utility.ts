@@ -93,7 +93,7 @@ export const createUserRandomAccess = (): Promise<string> => {
                 const random = crypto.randomBytes(10);
                 access = 'u' + random.toString('hex');
 
-                getAccessQuery = await DB.execute(userSQL.selectByAccess(access));
+                getAccessQuery = await DB.run(userSQL.selectByAccess(access));
 
             } while(getAccessQuery.length !== 0);
 

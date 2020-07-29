@@ -11,12 +11,12 @@ export const get = (id: number): Promise<Post|null> => {
         try {
 
             // get data of a post
-            const selectById: {user: number, access: string, email: string, name: string, profile: string, text: string, time: string}[] = await DB.execute(postSQL.selectById(id));
+            const selectById: {user: number, access: string, email: string, name: string, profile: string, text: string, time: string}[] = await DB.run(postSQL.selectById(id));
 
             if(selectById.length === 1) {
 
                 // get images of a post
-                const selectImage: {image: string}[] = await DB.execute(postSQL.selectImage(id));
+                const selectImage: {image: string}[] = await DB.run(postSQL.selectImage(id));
 
                 // save image file name to list
                 const imageList = [];
@@ -44,7 +44,7 @@ export const getIdFromAccess = (access: string): Promise<number> => {
 
         try {
 
-            const selectIdByAccess = (await DB.execute(postSQL.selectIdByAccess(access)));
+            const selectIdByAccess = (await DB.run(postSQL.selectIdByAccess(access)));
 
             if(selectIdByAccess.length === 0) { // if id does not exist
 
@@ -68,7 +68,7 @@ export const getFeed = (user: number, start: number, count: number): Promise<str
 
         try {
 
-            const selectFeedInRange = await DB.execute(postSQL.selectFeedInRange(user, start, count));
+            const selectFeedInRange = await DB.run(postSQL.selectFeedInRange(user, start, count));
 
             const postList = [];
             for(const post of selectFeedInRange) postList.push(post.access);
@@ -86,7 +86,7 @@ export const getNumberOfPostByUser = (user: number): Promise<number> => {
         try {
 
             // get number of posts by user
-            const selectNumberOfPostByUser = await DB.execute(postSQL.selectNumberOfPostByUser(user));
+            const selectNumberOfPostByUser = await DB.run(postSQL.selectNumberOfPostByUser(user));
             const postCount = selectNumberOfPostByUser[0].count;
 
             resolve(postCount);
@@ -102,7 +102,7 @@ export const getPostByUser = (user: number, start: number, count: number): Promi
         try {
 
             // get post list by user
-            const selectPostByUserInRange: {access: string}[] = await DB.execute(postSQL.selectPostByUserInRange(user, start, count));
+            const selectPostByUserInRange: {access: string}[] = await DB.run(postSQL.selectPostByUserInRange(user, start, count));
 
             // save post access to list
             const postList = [];
@@ -124,7 +124,7 @@ export const writePost = (user: number, text: string, imageList: any[]) => {
             const access: string = await postUtility.createPostRandomAccess();
 
             // add post to db
-            const add = await DB.execute(postSQL.add(access, user, text));
+            const add = await DB.run(postSQL.add(access, user, text));
             const postId: number = add.insertId;
 
             for(const [index, image] of Object.entries(imageList)) {
@@ -136,7 +136,7 @@ export const writePost = (user: number, text: string, imageList: any[]) => {
                 await utility.saveImage(originalPath, path.join(__dirname, '../../../', dataConfig.imageDir, imageName));
 
                 // add image to db
-                await DB.execute(postSQL.addImage(postId, imageName));
+                await DB.run(postSQL.addImage(postId, imageName));
 
             }
 
@@ -152,7 +152,7 @@ export const deletePost = (id: number) => {
 
         try {
 
-            await DB.execute(postSQL.deleteById(id));
+            await DB.run(postSQL.deleteById(id));
 
             resolve();
 
@@ -167,7 +167,7 @@ export const checkImage = (post: number, image: string): Promise<boolean> => {
         try {
 
             // get data of a post
-            const checkImage: {image: string}[] = await DB.execute(postSQL.checkImage(post, image));
+            const checkImage: {image: string}[] = await DB.run(postSQL.checkImage(post, image));
 
             if(checkImage.length === 1) resolve(true);
             else resolve(false);
@@ -182,7 +182,7 @@ export const like = (post: number, user: number): Promise<void> => {
 
         try {
 
-            await DB.execute(postSQL.addLike(post, user));
+            await DB.run(postSQL.addLike(post, user));
 
             resolve();
 
@@ -196,7 +196,7 @@ export const unLike = (post: number, user: number): Promise<void> => {
 
         try {
 
-            await DB.execute(postSQL.deleteLike(post, user));
+            await DB.run(postSQL.deleteLike(post, user));
 
             resolve();
 
@@ -211,7 +211,7 @@ export const getLike = (post: number): Promise<string[]> => {
         try {
 
             // get users who liked post
-            const selectLike: {access: string}[] = await DB.execute(postSQL.selectLike(post));
+            const selectLike: {access: string}[] = await DB.run(postSQL.selectLike(post));
 
             // save user access to list
             const userList = [];
@@ -232,7 +232,7 @@ export const writeComment = (post: number, user: number, comment: string): Promi
             // generate random access key
             const access: string = await postUtility.createCommentRandomAccess();
 
-            await DB.execute(postSQL.addComment(access, post, user, comment));
+            await DB.run(postSQL.addComment(access, post, user, comment));
 
             resolve();
 
@@ -246,7 +246,7 @@ export const deleteComment = (access: string): Promise<void> => {
 
         try {
 
-            await DB.execute(postSQL.deleteComment(access));
+            await DB.run(postSQL.deleteComment(access));
 
             resolve();
 
@@ -261,7 +261,7 @@ export const getComment = (access: string): Promise<Comment|null> => {
         try {
 
             // get data of a post
-            const selectCommentById: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.execute(postSQL.selectCommentByAccess(access));
+            const selectCommentById: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.run(postSQL.selectCommentByAccess(access));
 
             if(selectCommentById.length === 1) {
 
@@ -286,7 +286,7 @@ export const getCommentByPost = (post: number): Promise<Comment[]> => {
 
         try {
 
-            const selectComment: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.execute(postSQL.selectCommentByPost(post));
+            const selectComment: {id: number, access: string, comment: string, time: string, user: string}[] = await DB.run(postSQL.selectCommentByPost(post));
 
             const commentList = [];
             for(const comment of selectComment) commentList.push(new Comment(comment.id, comment.access, comment.user, comment.comment, comment.time));
